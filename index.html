@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Athene AI — Week 1 Sprint Code Review</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0b0c0e;
+    --surface: #131417;
+    --surface2: #1a1c21;
+    --border: #22252c;
+    --border2: #2d313b;
+    --accent: #f0c14a;
+    --accent2: #e07b4a;
+    --green: #4ade80;
+    --red: #f87171;
+    --orange: #fb923c;
+    --blue: #60a5fa;
+    --purple: #a78bfa;
+    --text: #e8e9ec;
+    --text2: #8b8fa8;
+    --text3: #5a5f75;
+    --score-high: #4ade80;
+    --score-mid: #fb923c;
+    --score-low: #f87171;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── Layout ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+  /* ── Header ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 48px 0 40px;
+    margin-bottom: 56px;
+  }
+  .header-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .header-sub {
+    color: var(--text2);
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  /* ── Section titles ── */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Sprint summary band ── */
+  .sprint-band {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 48px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .band-stat { text-align: center; }
+  .band-stat .num {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    display: block;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .band-stat .label {
+    font-size: 12px;
+    color: var(--text2);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .num.green { color: var(--green); }
+  .num.orange { color: var(--orange); }
+  .num.red { color: var(--red); }
+  .num.accent { color: var(--accent); }
+
+  /* ── File card ── */
+  .file-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .file-card:hover { border-color: var(--border2); }
+
+  .file-header {
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    user-select: none;
+  }
+  .file-header:hover { background: var(--surface2); }
+
+  .file-rank {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text3);
+    width: 28px;
+    flex-shrink: 0;
+  }
+
+  .file-path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--blue);
+    flex: 1;
+  }
+
+  .score-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .score-badge.high { background: rgba(74,222,128,0.12); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
+  .score-badge.mid  { background: rgba(251,146,60,0.12);  color: var(--orange); border: 1px solid rgba(251,146,60,0.25); }
+  .score-badge.low  { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+
+  .impact-bar-wrap { display: flex; align-items: center; gap: 8px; width: 120px; flex-shrink: 0; }
+  .impact-label { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; width: 26px; text-align: right; }
+  .impact-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .impact-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+  .impact-fill.green { background: var(--green); }
+  .impact-fill.orange { background: var(--orange); }
+  .impact-fill.red { background: var(--red); }
+  .impact-fill.accent { background: var(--accent); }
+
+  .chevron {
+    font-size: 12px;
+    color: var(--text3);
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  .file-card.open .chevron { transform: rotate(90deg); }
+
+  .file-body { display: none; padding: 28px; }
+  .file-card.open .file-body { display: block; }
+
+  /* ── Issues list ── */
+  .issues-section { margin-bottom: 24px; }
+  .issues-section h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text2);
+    margin-bottom: 12px;
+  }
+
+  .issue-row {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .issue-row:last-child { border-bottom: none; }
+
+  .severity-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 8px;
+  }
+  .sev-critical { background: var(--red); box-shadow: 0 0 6px var(--red); }
+  .sev-high     { background: var(--orange); }
+  .sev-medium   { background: var(--accent); }
+  .sev-low      { background: var(--blue); }
+
+  .issue-content { flex: 1; }
+  .issue-title { font-weight: 500; font-size: 14px; margin-bottom: 3px; }
+  .issue-why { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  /* ── Before / After ── */
+  .before-after {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .code-block {
+    background: #0d0f13;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .code-block-label {
+    padding: 8px 14px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border);
+  }
+  .code-block-label.before { color: var(--red); background: rgba(248,113,113,0.06); }
+  .code-block-label.after  { color: var(--green); background: rgba(74,222,128,0.06); }
+  .code-block pre {
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.65;
+    overflow-x: auto;
+    white-space: pre;
+    color: #c9d1d9;
+  }
+  .code-block pre .kw  { color: #ff7b72; }
+  .code-block pre .str { color: #a5d6ff; }
+  .code-block pre .cm  { color: #8b949e; font-style: italic; }
+  .code-block pre .fn  { color: #d2a8ff; }
+  .code-block pre .num { color: var(--orange); }
+  .code-block pre .add { color: var(--green); }
+  .code-block pre .del { color: var(--red); }
+  .code-block pre .acc { color: var(--accent); }
+
+  /* ── Score comparison ── */
+  .score-compare {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    margin-top: 12px;
+  }
+  .score-compare .sc-label { font-size: 12px; color: var(--text2); width: 80px; }
+  .sc-bar-wrap { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; position: relative; }
+  .sc-bar { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+  .sc-val { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; width: 42px; text-align: right; }
+
+  /* ── Improvement plan ── */
+  .plan-list { list-style: none; }
+  .plan-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    font-size: 14px;
+  }
+  .plan-list li:last-child { border-bottom: none; }
+  .plan-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent);
+    background: rgba(240,193,74,0.1);
+    border: 1px solid rgba(240,193,74,0.2);
+    border-radius: 4px;
+    padding: 2px 7px;
+    flex-shrink: 0;
+    height: fit-content;
+    margin-top: 2px;
+  }
+
+  /* ── Ablation table ── */
+  .ablation-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-bottom: 40px;
+  }
+  .ablation-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ablation-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .ablation-table tr:last-child td { border-bottom: none; }
+  .ablation-table tr:hover td { background: var(--surface2); }
+  .ablation-table .file-col {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--blue);
+  }
+  .delta-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    background: rgba(74,222,128,0.1);
+    color: var(--green);
+    border: 1px solid rgba(74,222,128,0.2);
+    white-space: nowrap;
+  }
+
+  /* ── Final scorecard ── */
+  .final-score {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    margin-top: 48px;
+    margin-bottom: 48px;
+  }
+  .final-score h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 28px;
+  }
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .score-row:last-child { margin-bottom: 0; }
+  .score-row-label {
+    font-size: 13px;
+    color: var(--text2);
+    width: 60px;
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .score-row-bar { flex: 1; height: 12px; background: var(--border); border-radius: 6px; overflow: hidden; }
+  .score-row-fill { height: 100%; border-radius: 6px; }
+  .score-row-fill.before { background: linear-gradient(90deg, #f87171, #fb923c); }
+  .score-row-fill.after  { background: linear-gradient(90deg, #4ade80, #60a5fa); }
+  .score-row-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    width: 60px;
+    text-align: right;
+  }
+  .score-row-num.before { color: var(--orange); }
+  .score-row-num.after  { color: var(--green); }
+
+  .callout {
+    background: rgba(240,193,74,0.06);
+    border: 1px solid rgba(240,193,74,0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-size: 14px;
+    color: var(--text2);
+    margin-top: 20px;
+    line-height: 1.65;
+  }
+  .callout strong { color: var(--accent); }
+
+  /* ── Rank chart ── */
+  .rank-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .rank-row:last-child { border-bottom: none; }
+  .rank-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text3);
+    width: 28px;
+    flex-shrink: 0;
+  }
+  .rank-file {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--blue);
+    flex: 1;
+  }
+  .rank-impact {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    width: 50px;
+    text-align: right;
+  }
+  .rank-bar-wrap { width: 160px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .rank-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+
+  /* ── Tabs ── */
+  .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .tab {
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text3);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    margin-bottom: -1px;
+  }
+  .tab:hover { color: var(--text2); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── Misc ── */
+  .mt-24 { margin-top: 24px; }
+  .mt-16 { margin-top: 16px; }
+  .mb-8 { margin-bottom: 8px; }
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    margin-right: 4px;
+  }
+  .tag.critical { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+  .tag.high     { background: rgba(251,146,60,0.15);  color: var(--orange); border: 1px solid rgba(251,146,60,0.25); }
+  .tag.medium   { background: rgba(240,193,74,0.15);  color: var(--accent); border: 1px solid rgba(240,193,74,0.25); }
+  .tag.low      { background: rgba(96,165,250,0.15);  color: var(--blue); border: 1px solid rgba(96,165,250,0.25); }
+  .tag.good     { background: rgba(74,222,128,0.12);  color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    color: var(--text3);
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 32px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ══════════════════════════════════════════════════════ HEADER -->
+<header>
+  <div class="header-tag">Athene AI · Week 1 Sprint · Code Review Report</div>
+  <h1>Production Readiness<br>Ablation Study</h1>
+  <p class="header-sub">File-by-file analysis — issues, fixes, impact scores, and sprint-wide readiness delta</p>
+</header>
+
+<!-- ══════════════════════════════════════════════════════ SPRINT SUMMARY -->
+<div class="sprint-band">
+  <div class="band-stat"><span class="num accent">8</span><span class="label">Sprint Issues</span></div>
+  <div class="band-stat"><span class="num red">42%</span><span class="label">Readiness Before</span></div>
+  <div class="band-stat"><span class="num green">81%</span><span class="label">Readiness After</span></div>
+  <div class="band-stat"><span class="num orange">+39pt</span><span class="label">Total Delta</span></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('files')">File Reviews</div>
+  <div class="tab" onclick="switchTab('ranking')">Impact Ranking</div>
+  <div class="tab" onclick="switchTab('ablation')">Ablation Table</div>
+  <div class="tab" onclick="switchTab('sprint')">Sprint Scorecard</div>
+</div>
+
+<!-- ═════════════════════════════════ TAB: FILE REVIEWS -->
+<div class="tab-panel active" id="tab-files">
+<p class="section-title">File-by-File Analysis</p>
+
+<!-- ─── FILE 1: middleware.ts (MISSING) -->
+<div class="file-card open" id="card-0">
+  <div class="file-header" onclick="toggle('card-0')">
+    <span class="file-rank">#1</span>
+    <span class="file-path">middleware.ts &nbsp;<span style="color:var(--red);font-size:11px;">— MISSING</span></span>
+    <span class="score-badge low">0 / 10 → 9 / 10</span>
+    <div class="impact-bar-wrap">
+      <span class="impact-label">+12pt</span>
+      <div class="impact-bar"><div class="impact-fill green" style="width:100%"></div></div>
+    </div>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="file-body">
+    <div class="issues-section">
+      <h4>Issues Found</h4>
+      <div class="issue-row">
+        <div class="severity-dot sev-critical"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag critical">CRITICAL</span> File does not exist — all routes are publicly accessible</div>
+          <div class="issue-why">Without <code>middleware.ts</code>, Clerk's <code>clerkMiddleware()</code> never runs. Every <code>/api/*</code> route and every <code>/(dashboard)/*</code> page is fully unauthenticated. Any user can hit the agent route, read thread state, and trigger write actions — no credentials required. This is the single most severe gap in the codebase.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-critical"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag critical">CRITICAL</span> RBAC context headers never get injected</div>
+          <div class="issue-why"><code>rls-client.ts</code> reads <code>x-current-org-id</code>, <code>x-current-user-role</code>, etc. from request headers — but those headers are only set by middleware. Without it, <code>getContextFromHeaders()</code> always returns <code>null</code>, so the RLS wrapper silently falls back to the wrong identity.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-high"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag high">HIGH</span> Dashboard pages not protected — no redirect to sign-in</div>
+          <div class="issue-why">Unauthenticated visitors can browse <code>/chat</code>, <code>/insights</code>, <code>/admin</code> directly. Clerk's server-side <code>auth()</code> calls inside those pages will throw rather than redirect.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="issues-section mt-24">
+      <h4>Prioritised Fix Plan</h4>
+      <ul class="plan-list">
+        <li><span class="plan-num">P1</span> Create <code>middleware.ts</code> using <code>clerkMiddleware()</code>, protect <code>/api/*</code> and <code>/(dashboard)/*</code>, public routes: <code>/</code>, <code>/sign-in</code>, <code>/sign-up</code></li>
+        <li><span class="plan-num">P2</span> Inside middleware, after auth, call <code>resolveUserAccess()</code> and inject RBAC headers onto the response object so downstream handlers can use <code>getContextFromHeaders()</code></li>
+        <li><span class="plan-num">P3</span> Add a matcher config so middleware doesn't run on <code>/_next/static</code> or <code>/public</code> assets (performance)</li>
+      </ul>
+    </div>
+
+    <div class="issues-section mt-24">
+      <h4>Before → After</h4>
+      <div class="before-after">
+        <div class="code-block">
+          <div class="code-block-label before">✗ BEFORE — file missing</div>
+          <pre><span class="cm">// middleware.ts
+// *** FILE DOES NOT EXIST ***
+// All routes are open to the world.</span></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block-label after">✓ AFTER — production-ready</div>
+          <pre><span class="kw">import</span> { clerkMiddleware, createRouteMatcher }
+  <span class="kw">from</span> <span class="str">'@clerk/nextjs/server'</span>;
+<span class="kw">import</span> { NextResponse } <span class="kw">from</span> <span class="str">'next/server'</span>;
+<span class="kw">import</span> { resolveUserAccess } <span class="kw">from</span> <span class="str">'@/lib/auth/rbac'</span>;
+
+<span class="kw">const</span> <span class="fn">isPublic</span> = <span class="fn">createRouteMatcher</span>([
+  <span class="str">'/'</span>, <span class="str">'/sign-in(.*)'</span>, <span class="str">'/sign-up(.*)'</span>
+]);
+
+<span class="kw">export default</span> <span class="fn">clerkMiddleware</span>(<span class="kw">async</span> (auth, req) => {
+  <span class="kw">if</span> (<span class="fn">isPublic</span>(req)) <span class="kw">return</span>;
+  <span class="kw">const</span> { userId, orgId, orgRole } = <span class="kw">await</span> auth.<span class="fn">protect</span>();
+  <span class="kw">const</span> access = <span class="kw">await</span> <span class="fn">resolveUserAccess</span>(
+    userId, orgId, orgRole
+  );
+  <span class="kw">const</span> res = NextResponse.<span class="fn">next</span>();
+  res.headers.<span class="fn">set</span>(<span class="str">'x-current-org-id'</span>, orgId);
+  res.headers.<span class="fn">set</span>(<span class="str">'x-current-user-id'</span>,
+    access.internal_user_id ?? <span class="str">''</span>);
+  res.headers.<span class="fn">set</span>(<span class="str">'x-current-user-role'</span>,
+    access.role ?? <span class="str">'member'</span>);
+  res.headers.<span class="fn">set</span>(<span class="str">'x-current-user-dept-id'</span>,
+    access.dept_id ?? <span class="str">''</span>);
+  <span class="kw">return</span> res;
+});
+
+<span class="kw">export const</span> config = {
+  matcher: [<span class="str">'/((?!_next/static|_next/image|favicon).*)' </span>]
+};</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="score-compare">
+      <span class="sc-label">Before</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:0%;background:var(--red)"></div></div>
+      <span class="sc-val" style="color:var(--red)">0/10</span>
+    </div>
+    <div class="score-compare">
+      <span class="sc-label">After</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div>
+      <span class="sc-val" style="color:var(--green)">9/10</span>
+    </div>
+    <div class="callout" style="margin-top:16px">
+      <strong>Sprint impact: +12 pts.</strong> This is the highest-leverage fix in the entire sprint. Every other security control (RLS, RBAC, Nango ownership checks) assumes that the caller has been authenticated — which never happens without middleware.
+    </div>
+  </div>
+</div>
+
+<!-- ─── FILE 2: llm-factory.ts -->
+<div class="file-card" id="card-1">
+  <div class="file-header" onclick="toggle('card-1')">
+    <span class="file-rank">#2</span>
+    <span class="file-path">lib/langgraph/llm-factory.ts</span>
+    <span class="score-badge low">2 / 10 → 8 / 10</span>
+    <div class="impact-bar-wrap">
+      <span class="impact-label">+8pt</span>
+      <div class="impact-bar"><div class="impact-fill orange" style="width:67%"></div></div>
+    </div>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="file-body">
+    <div class="issues-section">
+      <h4>Issues Found</h4>
+      <div class="issue-row">
+        <div class="severity-dot sev-critical"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag critical">CRITICAL</span> Singleton pattern ignores modelName/temperature arguments</div>
+          <div class="issue-why">The factory caches the first model instance ever created. Every subsequent call to <code>getModel('gpt-4o-mini', 0.7)</code> silently returns the original <code>gpt-4o</code> instance at <code>temperature=0</code>. The supervisor, retrieval agent, and cross-dept agent all share one model, making tier-based routing (Haiku/Sonnet/Opus) impossible.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-critical"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag critical">CRITICAL</span> BYOK (Bring Your Own Key) not implemented</div>
+          <div class="issue-why">The architecture spec (ATH-21) requires reading encrypted org keys from <code>org_api_keys</code> and instantiating org-specific model clients. The current file ignores this entirely — every org's requests go through the same platform key, which is wrong for enterprise billing isolation and blocks BYOK as a feature.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-high"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag high">HIGH</span> Only OpenAI supported — Anthropic SDK installed but unused</div>
+          <div class="issue-why"><code>@anthropic-ai/sdk</code>, <code>@google/generative-ai</code> are in package.json but <code>llm-factory.ts</code> only imports <code>ChatOpenAI</code>. The model selection matrix (Haiku→Sonnet→Opus) from the spec is completely absent. The architecture spec is explicit: supervisor defaults to Sonnet, not GPT-4o.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-high"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag high">HIGH</span> No env var guard — crashes on missing OPENAI_API_KEY</div>
+          <div class="issue-why">If <code>OPENAI_API_KEY</code> is absent the app crashes on module load, not on first use. This breaks local dev without the key and gives a terrible error message.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="issues-section mt-24">
+      <h4>Prioritised Fix Plan</h4>
+      <ul class="plan-list">
+        <li><span class="plan-num">P1</span> Replace single-instance singleton with a per-key registry (Map keyed on <code>model+temp</code>)</li>
+        <li><span class="plan-num">P2</span> Add <code>resolveModelClient(orgId, complexity)</code> that reads <code>org_api_keys</code> (via supabaseAdmin) and instantiates Anthropic / OpenAI / Gemini accordingly</li>
+        <li><span class="plan-num">P3</span> Implement model selection matrix: simple→haiku/gpt-4o-mini, medium→sonnet/gpt-4o, complex→opus/gpt-4o</li>
+        <li><span class="plan-num">P4</span> Guard env vars, throw actionable errors at call-time (not module load)</li>
+      </ul>
+    </div>
+
+    <div class="before-after">
+      <div class="code-block">
+        <div class="code-block-label before">✗ BEFORE — broken singleton</div>
+        <pre><span class="kw">class</span> LLMFactory {
+  <span class="kw">private static</span> instance: ChatOpenAI | <span class="kw">null</span> = <span class="kw">null</span>;
+
+  <span class="kw">static</span> <span class="fn">getModel</span>(
+    modelName = <span class="str">"gpt-4o"</span>,
+    temperature = <span class="num">0</span>
+  ) {
+    <span class="kw">if</span> (!<span class="kw">this</span>.instance) {
+      <span class="kw">this</span>.instance = <span class="kw">new</span> <span class="fn">ChatOpenAI</span>({
+        modelName, temperature
+      });
+    }
+    <span class="cm">// BUG: always returns first
+    // instance regardless of args</span>
+    <span class="kw">return this</span>.instance;
+  }
+}</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-label after">✓ AFTER — tier-aware multi-provider</div>
+        <pre><span class="kw">const</span> MODEL_MAP = {
+  simple:  { anthropic: <span class="str">'claude-haiku-4-5'</span> },
+  medium:  { anthropic: <span class="str">'claude-sonnet-4-6'</span> },
+  complex: { anthropic: <span class="str">'claude-opus-4-6'</span> },
+};
+
+<span class="kw">export async function</span> <span class="fn">resolveModelClient</span>(
+  orgId: <span class="kw">string</span>,
+  tier: ModelTier = <span class="str">'medium'</span>
+) {
+  <span class="cm">// 1. Check org BYOK keys</span>
+  <span class="kw">const</span> { data } = <span class="kw">await</span> supabaseAdmin
+    .<span class="fn">from</span>(<span class="str">'org_api_keys'</span>)
+    .<span class="fn">select</span>(<span class="str">'provider,encrypted_key'</span>)
+    .<span class="fn">eq</span>(<span class="str">'org_id'</span>, orgId).<span class="fn">maybeSingle</span>();
+
+  <span class="kw">const</span> model = MODEL_MAP[tier].anthropic;
+  <span class="kw">const</span> apiKey = data
+    ? <span class="fn">decrypt</span>(data.encrypted_key)
+    : process.env.ANTHROPIC_API_KEY!;
+
+  <span class="kw">return new</span> <span class="fn">ChatAnthropic</span>({ model, apiKey });
+}</pre>
+      </div>
+    </div>
+
+    <div class="score-compare">
+      <span class="sc-label">Before</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:20%;background:var(--red)"></div></div>
+      <span class="sc-val" style="color:var(--red)">2/10</span>
+    </div>
+    <div class="score-compare">
+      <span class="sc-label">After</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:80%;background:var(--green)"></div></div>
+      <span class="sc-val" style="color:var(--green)">8/10</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FILE 3: lib/auth/rbac.ts -->
+<div class="file-card" id="card-2">
+  <div class="file-header" onclick="toggle('card-2')">
+    <span class="file-rank">#3</span>
+    <span class="file-path">lib/auth/rbac.ts</span>
+    <span class="score-badge mid">5 / 10 → 9 / 10</span>
+    <div class="impact-bar-wrap">
+      <span class="impact-label">+6pt</span>
+      <div class="impact-bar"><div class="impact-fill orange" style="width:50%"></div></div>
+    </div>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="file-body">
+    <div class="issues-section">
+      <h4>Issues Found</h4>
+      <div class="issue-row">
+        <div class="severity-dot sev-critical"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag critical">CRITICAL</span> Silent Clerk role fallback allows privilege escalation</div>
+          <div class="issue-why">When Supabase returns no user record (user not yet provisioned), the code falls back to the raw Clerk JWT role. An attacker who creates a Clerk account with <code>org:admin</code> role before being added to <code>org_members</code> gets admin-level access. The fallback should return <code>null</code> (deny) not the Clerk role.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-high"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag high">HIGH</span> Swallowed DB errors are invisible in production</div>
+          <div class="issue-why">Both the Supabase query catch block and the Redis set catch block are empty comments: <code>// Non-fatal</code>. DB failures silently return a null role. Structured logging should at minimum emit a warning with the error object so on-call engineers can triage access failures.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-medium"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag medium">MEDIUM</span> Cache TTL is 60s — too short for performance, right for security</div>
+          <div class="issue-why">60 seconds means 1 Supabase query per minute per active user. At 100 concurrent users this is 100 DB calls/min just for RBAC. Consider 5 minutes with an explicit invalidation on role change (per the spec which says 5 min TTL).</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-low"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag low">LOW</span> <code>normalizeDeptIds</code> defined but never called</div>
+          <div class="issue-why">Dead code. The function exists but <code>accessible_dept_ids</code> is built directly from the grant query instead. Remove or actually call it for consistency.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="issues-section mt-24">
+      <h4>Prioritised Fix Plan</h4>
+      <ul class="plan-list">
+        <li><span class="plan-num">P1</span> Remove Clerk role fallback entirely — if no Supabase record exists, return <code>role: null</code> and let callers deny access</li>
+        <li><span class="plan-num">P2</span> Add structured logging on all catch blocks (even a single <code>console.warn</code> with the error)</li>
+        <li><span class="plan-num">P3</span> Increase cache TTL to 300s and add a cache invalidation helper called on role change</li>
+        <li><span class="plan-num">P4</span> Remove dead <code>normalizeDeptIds</code></li>
+      </ul>
+    </div>
+
+    <div class="before-after">
+      <div class="code-block">
+        <div class="code-block-label before">✗ BEFORE — escalation via fallback</div>
+        <pre><span class="cm">// 2. Fallback to Clerk role</span>
+<span class="kw">if</span> (!result || !result.role) {
+  <span class="kw">const</span> mappedRole = <span class="fn">mapRole</span>(clerkRole);
+  result = {
+    ...result,
+    <span class="del">role: mappedRole,  // ← grants Clerk role</span>
+                      <span class="cm">// even w/o DB record</span>
+  };
+}</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-label after">✓ AFTER — deny-by-default</div>
+        <pre><span class="cm">// 2. No DB record = deny</span>
+<span class="kw">if</span> (!result || !result.role) {
+  console.<span class="fn">warn</span>(<span class="str">`[RBAC] No org_members row`
+  + ` for ${userId} in ${orgId}`</span>);
+  <span class="kw">return</span> {
+    internal_user_id: <span class="kw">null</span>,
+    <span class="add">role: null,  // ← caller must deny</span>
+    dept_id: <span class="kw">null</span>,
+    accessible_dept_ids: <span class="kw">null</span>,
+    bi_grant_id: <span class="kw">null</span>,
+  };
+}</pre>
+      </div>
+    </div>
+
+    <div class="score-compare">
+      <span class="sc-label">Before</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:50%;background:var(--orange)"></div></div>
+      <span class="sc-val" style="color:var(--orange)">5/10</span>
+    </div>
+    <div class="score-compare">
+      <span class="sc-label">After</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div>
+      <span class="sc-val" style="color:var(--green)">9/10</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FILE 4: app/api/agent/route.ts -->
+<div class="file-card" id="card-3">
+  <div class="file-header" onclick="toggle('card-3')">
+    <span class="file-rank">#4</span>
+    <span class="file-path">app/api/agent/route.ts</span>
+    <span class="score-badge mid">5 / 10 → 8 / 10</span>
+    <div class="impact-bar-wrap">
+      <span class="impact-label">+5pt</span>
+      <div class="impact-bar"><div class="impact-fill orange" style="width:42%"></div></div>
+    </div>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="file-body">
+    <div class="issues-section">
+      <h4>Issues Found</h4>
+      <div class="issue-row">
+        <div class="severity-dot sev-critical"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag critical">CRITICAL</span> No input validation — <code>message</code> is passed raw to the LLM</div>
+          <div class="issue-why"><code>const { message, threadId } = await req.json()</code> with zero validation. If <code>message</code> is undefined, <code>new HumanMessage(undefined)</code> throws an opaque error. If it's 10 MB of text, it burns tokens and may crash the process. At minimum: require non-empty string, enforce max length.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-high"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag high">HIGH</span> Error message from internal system leaked to client in 500 response</div>
+          <div class="issue-why"><code>return new NextResponse(msg, { status: 500 })</code> where <code>msg</code> is the raw <code>Error.message</code> from the LangGraph graph. Internal stack traces, model names, and Supabase connection strings can appear in the response body.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-high"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag high">HIGH</span> Thread ownership not verified before resuming graph state</div>
+          <div class="issue-why">Any authenticated user can pass any <code>threadId</code> and read another user's graph state. The status route does verify ownership, but the main agent route does not — it just calls <code>graph.stream(initialState)</code> with the user-supplied ID.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-medium"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag medium">MEDIUM</span> Rate limiting absent</div>
+          <div class="issue-why">A single user can spam the agent endpoint. Each request spins up a LangGraph stream and makes Anthropic API calls. Without rate limiting, one bad actor can run up the platform's LLM bill or DoS the service.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="issues-section mt-24">
+      <h4>Prioritised Fix Plan</h4>
+      <ul class="plan-list">
+        <li><span class="plan-num">P1</span> Validate body with Zod: <code>message</code> must be a non-empty string ≤ 4000 chars, <code>threadId</code> optional UUID</li>
+        <li><span class="plan-num">P2</span> Return <code>"Internal Server Error"</code> literal for 500s, log the real error server-side only</li>
+        <li><span class="plan-num">P3</span> If <code>threadId</code> is provided, verify it belongs to <code>userId</code>/<code>orgId</code> before streaming</li>
+        <li><span class="plan-num">P4</span> Add Redis-based rate limit: e.g. 20 requests/user/minute using <code>incrWithExpire</code></li>
+      </ul>
+    </div>
+
+    <div class="before-after">
+      <div class="code-block">
+        <div class="code-block-label before">✗ BEFORE — unvalidated input</div>
+        <pre><span class="kw">const</span> { message, threadId } =
+  <span class="kw">await</span> req.<span class="fn">json</span>();
+<span class="cm">// no validation at all</span>
+
+<span class="kw">const</span> initialState = {
+  messages: [<span class="kw">new</span> <span class="fn">HumanMessage</span>(<span class="del">message</span>)],
+  orgId, userId, role,
+};</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-label after">✓ AFTER — validated + safe errors</div>
+        <pre><span class="kw">const</span> schema = z.<span class="fn">object</span>({
+  message: z.<span class="fn">string</span>().<span class="fn">min</span>(<span class="num">1</span>).<span class="fn">max</span>(<span class="num">4000</span>),
+  threadId: z.<span class="fn">string</span>().<span class="fn">uuid</span>().<span class="fn">optional</span>(),
+});
+<span class="kw">const</span> parsed = schema.<span class="fn">safeParse</span>(
+  <span class="kw">await</span> req.<span class="fn">json</span>()
+);
+<span class="kw">if</span> (!parsed.success) <span class="kw">return</span>
+  NextResponse.<span class="fn">json</span>(
+    { error: <span class="str">'Invalid request'</span> }, { status: <span class="num">400</span> }
+  );
+
+<span class="kw">const</span> { message, threadId } = parsed.data;
+<span class="cm">// safe to use now</span></pre>
+      </div>
+    </div>
+
+    <div class="score-compare">
+      <span class="sc-label">Before</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:50%;background:var(--orange)"></div></div>
+      <span class="sc-val" style="color:var(--orange)">5/10</span>
+    </div>
+    <div class="score-compare">
+      <span class="sc-label">After</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:80%;background:var(--green)"></div></div>
+      <span class="sc-val" style="color:var(--green)">8/10</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FILE 5: lib/qstash/verify.ts -->
+<div class="file-card" id="card-4">
+  <div class="file-header" onclick="toggle('card-4')">
+    <span class="file-rank">#5</span>
+    <span class="file-path">lib/qstash/verify.ts</span>
+    <span class="score-badge mid">6 / 10 → 9 / 10</span>
+    <div class="impact-bar-wrap">
+      <span class="impact-label">+4pt</span>
+      <div class="impact-bar"><div class="impact-fill accent" style="width:33%"></div></div>
+    </div>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="file-body">
+    <div class="issues-section">
+      <h4>Issues Found</h4>
+      <div class="issue-row">
+        <div class="severity-dot sev-high"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag high">HIGH</span> <code>url</code> param omitted from <code>receiver.verify()</code> — replay attacks possible</div>
+          <div class="issue-why">QStash signatures include the destination URL. Without passing <code>url: req.url</code> to <code>receiver.verify()</code>, an attacker can capture a valid signed payload from any worker endpoint and replay it against a different worker endpoint (e.g. replay a "briefing" job as a "data-index" job). The <code>url</code> field is mandatory for full protection.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-high"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag high">HIGH</span> Empty signing keys fall through silently</div>
+          <div class="issue-why"><code>process.env.QSTASH_CURRENT_SIGNING_KEY || ''</code> — an empty string is accepted as a key value. If the env var is missing in production (e.g. misconfigured deployment), the receiver is initialised with empty keys and may accept or reject everything unpredictably.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="issues-section mt-24">
+      <h4>Prioritised Fix Plan</h4>
+      <ul class="plan-list">
+        <li><span class="plan-num">P1</span> Pass <code>url: req.url</code> to <code>receiver.verify()</code></li>
+        <li><span class="plan-num">P2</span> Guard the env vars — throw at module load if either signing key is absent</li>
+      </ul>
+    </div>
+
+    <div class="before-after">
+      <div class="code-block">
+        <div class="code-block-label before">✗ BEFORE — URL missing</div>
+        <pre><span class="kw">const</span> isValid = <span class="kw">await</span> receiver.<span class="fn">verify</span>({
+  signature,
+  body,
+  <span class="cm">// ← url NOT passed</span>
+  <span class="cm">// replay attacks possible</span>
+});
+<span class="kw">return</span> isValid;</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-label after">✓ AFTER — full verification</div>
+        <pre"><span class="kw">const</span> isValid = <span class="kw">await</span> receiver.<span class="fn">verify</span>({
+  signature,
+  body,
+  <span class="add">url: req.url,  // ← required!</span>
+});
+<span class="kw">return</span> isValid;</pre>
+      </div>
+    </div>
+
+    <div class="score-compare">
+      <span class="sc-label">Before</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:60%;background:var(--orange)"></div></div>
+      <span class="sc-val" style="color:var(--orange)">6/10</span>
+    </div>
+    <div class="score-compare">
+      <span class="sc-label">After</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div>
+      <span class="sc-val" style="color:var(--green)">9/10</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FILE 6: lib/supabase/server.ts -->
+<div class="file-card" id="card-5">
+  <div class="file-header" onclick="toggle('card-5')">
+    <span class="file-rank">#6</span>
+    <span class="file-path">lib/supabase/server.ts</span>
+    <span class="score-badge mid">6 / 10 → 8 / 10</span>
+    <div class="impact-bar-wrap">
+      <span class="impact-label">+3pt</span>
+      <div class="impact-bar"><div class="impact-fill accent" style="width:25%"></div></div>
+    </div>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="file-body">
+    <div class="issues-section">
+      <h4>Issues Found</h4>
+      <div class="issue-row">
+        <div class="severity-dot sev-high"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag high">HIGH</span> Three exported aliases for the same admin client cause confusion</div>
+          <div class="issue-why"><code>supabaseAdmin</code>, <code>supabaseServer</code>, and <code>supabase</code> all point to the same service-role client that bypasses RLS. A developer reaching for <code>supabase</code> (which sounds like "the normal client") will unknowingly bypass RLS on every query. This already happened — <code>lib/nango/client.ts</code> imports <code>supabase</code> and uses it for security-sensitive ownership checks.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-medium"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag medium">MEDIUM</span> Placeholder credentials in test mode — unit tests pass with fake Supabase</div>
+          <div class="issue-why">The placeholder URL/key logic lets tests run without real credentials, which sounds good, but the placeholders also silently succeed on <code>createClient()</code>. Any test that hits Supabase gets <code>fetch</code> errors rather than meaningful test failures. Better to use a proper mock or a local Supabase instance.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="issues-section mt-24">
+      <h4>Prioritised Fix Plan</h4>
+      <ul class="plan-list">
+        <li><span class="plan-num">P1</span> Remove <code>supabaseServer</code> and <code>supabase</code> aliases — only export <code>supabaseAdmin</code> with a JSDoc warning: "Bypasses RLS — use withRLS() for user queries"</li>
+        <li><span class="plan-num">P2</span> Update <code>lib/nango/client.ts</code> import to use <code>supabaseAdmin</code> explicitly</li>
+      </ul>
+    </div>
+
+    <div class="score-compare">
+      <span class="sc-label">Before</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:60%;background:var(--orange)"></div></div>
+      <span class="sc-val" style="color:var(--orange)">6/10</span>
+    </div>
+    <div class="score-compare">
+      <span class="sc-label">After</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:80%;background:var(--green)"></div></div>
+      <span class="sc-val" style="color:var(--green)">8/10</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FILE 7: lib/qstash/client.ts -->
+<div class="file-card" id="card-6">
+  <div class="file-header" onclick="toggle('card-6')">
+    <span class="file-rank">#7</span>
+    <span class="file-path">lib/qstash/client.ts</span>
+    <span class="score-badge high">7 / 10 → 9 / 10</span>
+    <div class="impact-bar-wrap">
+      <span class="impact-label">+3pt</span>
+      <div class="impact-bar"><div class="impact-fill accent" style="width:25%"></div></div>
+    </div>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="file-body">
+    <div class="issues-section">
+      <h4>Issues Found</h4>
+      <div class="issue-row">
+        <div class="severity-dot sev-high"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag high">HIGH</span> Duplicate Supabase client instantiated at module load</div>
+          <div class="issue-why">The file creates its own <code>createClient(...)</code> with hardcoded dummy URL instead of importing <code>supabaseAdmin</code>. This creates a second connection pool, misses any singleton optimisation, and the "local-dummy.supabase.co" placeholder will never reach prod. Jobs queued to <code>pending_background_jobs</code> silently fail.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-medium"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag medium">MEDIUM</span> <code>body: any</code> type — no schema on dispatched job payloads</div>
+          <div class="issue-why">Worker routes receive raw JSON with no validated shape. A consumer that serialises the wrong fields creates a silent mismatch between producer and worker. Define a <code>JobPayload</code> discriminated union and validate with Zod.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="issues-section mt-24">
+      <h4>Prioritised Fix Plan</h4>
+      <ul class="plan-list">
+        <li><span class="plan-num">P1</span> Replace the inline <code>createClient</code> with <code>import { supabaseAdmin } from '@/lib/supabase/server'</code></li>
+        <li><span class="plan-num">P2</span> Type <code>body</code> as a discriminated union (or at minimum <code>Record&lt;string,unknown&gt;</code>) and validate before insert</li>
+      </ul>
+    </div>
+
+    <div class="score-compare">
+      <span class="sc-label">Before</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:70%;background:var(--orange)"></div></div>
+      <span class="sc-val" style="color:var(--orange)">7/10</span>
+    </div>
+    <div class="score-compare">
+      <span class="sc-label">After</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div>
+      <span class="sc-val" style="color:var(--green)">9/10</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FILE 8: scratch/ directory -->
+<div class="file-card" id="card-7">
+  <div class="file-header" onclick="toggle('card-7')">
+    <span class="file-rank">#8</span>
+    <span class="file-path">scratch/ &nbsp;<span style="color:var(--orange);font-size:11px;">(16 debug files in repo)</span></span>
+    <span class="score-badge mid">— / 10</span>
+    <div class="impact-bar-wrap">
+      <span class="impact-label">+2pt</span>
+      <div class="impact-bar"><div class="impact-fill accent" style="width:17%"></div></div>
+    </div>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="file-body">
+    <div class="issues-section">
+      <h4>Issues Found</h4>
+      <div class="issue-row">
+        <div class="severity-dot sev-high"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag high">HIGH</span> 16 debug/test scripts committed to main — including credentials checks</div>
+          <div class="issue-why">Files like <code>check-supabase.ts</code>, <code>check-jwt.ts</code>, <code>debug-supabase.ts</code>, <code>test_nango_security.ts</code> are in the repo root. Several of these read environment variables and make live API calls. They reveal your infrastructure topology to anyone who clones the repo, and they may accidentally get bundled by a misconfigured build.</div>
+        </div>
+      </div>
+      <div class="issue-row">
+        <div class="severity-dot sev-medium"></div>
+        <div class="issue-content">
+          <div class="issue-title"><span class="tag medium">MEDIUM</span> No <code>.env.example</code> file — new devs don't know which vars are needed</div>
+          <div class="issue-why">The architecture spec (ATH-22) explicitly required creating <code>.env.example</code>. It's missing. A new contributor has no reference for which environment variables to configure and will get cryptic runtime errors.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="issues-section mt-24">
+      <h4>Prioritised Fix Plan</h4>
+      <ul class="plan-list">
+        <li><span class="plan-num">P1</span> Add <code>scratch/</code> to <code>.gitignore</code> and remove tracked files: <code>git rm -r --cached scratch/</code></li>
+        <li><span class="plan-num">P2</span> Move any useful scripts to <code>scripts/</code> with proper TS project config and add to <code>.gitignore</code></li>
+        <li><span class="plan-num">P3</span> Create <code>.env.example</code> with all required keys (no values, just key names and comments)</li>
+      </ul>
+    </div>
+
+    <div class="score-compare">
+      <span class="sc-label">Sprint</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:42%;background:var(--orange)"></div></div>
+      <span class="sc-val" style="color:var(--orange)">Before</span>
+    </div>
+    <div class="score-compare">
+      <span class="sc-label">Sprint</span>
+      <div class="sc-bar-wrap"><div class="sc-bar" style="width:81%;background:var(--green)"></div></div>
+      <span class="sc-val" style="color:var(--green)">After</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- end tab-files -->
+
+<!-- ═════════════════════════════════ TAB: IMPACT RANKING -->
+<div class="tab-panel" id="tab-ranking">
+  <p class="section-title">Files Ranked by Impact</p>
+
+  <div class="rank-row">
+    <span class="rank-num">1</span>
+    <span class="rank-file">middleware.ts</span>
+    <div class="rank-bar-wrap"><div class="rank-fill" style="width:100%"></div></div>
+    <span class="rank-impact">+12pt</span>
+  </div>
+  <div class="rank-row">
+    <span class="rank-num">2</span>
+    <span class="rank-file">lib/langgraph/llm-factory.ts</span>
+    <div class="rank-bar-wrap"><div class="rank-fill" style="width:67%"></div></div>
+    <span class="rank-impact">+8pt</span>
+  </div>
+  <div class="rank-row">
+    <span class="rank-num">3</span>
+    <span class="rank-file">lib/auth/rbac.ts</span>
+    <div class="rank-bar-wrap"><div class="rank-fill" style="width:50%"></div></div>
+    <span class="rank-impact">+6pt</span>
+  </div>
+  <div class="rank-row">
+    <span class="rank-num">4</span>
+    <span class="rank-file">app/api/agent/route.ts</span>
+    <div class="rank-bar-wrap"><div class="rank-fill" style="width:42%"></div></div>
+    <span class="rank-impact">+5pt</span>
+  </div>
+  <div class="rank-row">
+    <span class="rank-num">5</span>
+    <span class="rank-file">lib/qstash/verify.ts</span>
+    <div class="rank-bar-wrap"><div class="rank-fill" style="width:33%"></div></div>
+    <span class="rank-impact">+4pt</span>
+  </div>
+  <div class="rank-row">
+    <span class="rank-num">6</span>
+    <span class="rank-file">lib/supabase/server.ts</span>
+    <div class="rank-bar-wrap"><div class="rank-fill" style="width:25%"></div></div>
+    <span class="rank-impact">+3pt</span>
+  </div>
+  <div class="rank-row">
+    <span class="rank-num">7</span>
+    <span class="rank-file">lib/qstash/client.ts</span>
+    <div class="rank-bar-wrap"><div class="rank-fill" style="width:25%"></div></div>
+    <span class="rank-impact">+3pt</span>
+  </div>
+  <div class="rank-row">
+    <span class="rank-num">8</span>
+    <span class="rank-file">scratch/ directory</span>
+    <div class="rank-bar-wrap"><div class="rank-fill" style="width:17%"></div></div>
+    <span class="rank-impact">+2pt</span>
+  </div>
+
+  <div class="callout mt-24">
+    <strong>Key insight:</strong> Files #1–3 together account for <strong>26 of the 39 available points</strong> (67%). Fix middleware + llm-factory + rbac first and the sprint jumps from 42% to ~70% readiness before touching anything else. The remaining 5 files are important but diminishing returns.
+  </div>
+
+  <div class="callout mt-24" style="border-color: rgba(96,165,250,0.3); background: rgba(96,165,250,0.06);">
+    <strong style="color:var(--blue);">Files that are already solid:</strong> <code>lib/supabase/rls-client.ts</code> is genuinely well-written — dual enforcement (headers + SET LOCAL), proper grant resolution, clear fallback path. <code>lib/nango/client.ts</code> has strong ownership verification. <code>lib/qstash/client.ts</code> has correct atomic double-claim prevention on <code>releaseSlot()</code>. These are real production-quality patterns worth calling out to the team.
+  </div>
+</div>
+
+<!-- ═════════════════════════════════ TAB: ABLATION TABLE -->
+<div class="tab-panel" id="tab-ablation">
+  <p class="section-title">Ablation Study — Cumulative Readiness</p>
+  <p style="color:var(--text2);font-size:14px;margin-bottom:24px;">Each row shows: what the sprint readiness score is if you've fixed all files up to and including that rank. Fixing in order of impact is the optimal strategy.</p>
+
+  <table class="ablation-table">
+    <thead>
+      <tr>
+        <th>Order Fixed</th>
+        <th>File</th>
+        <th>Isolated Score Before</th>
+        <th>Isolated Score After</th>
+        <th>Sprint Readiness</th>
+        <th>Delta</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Baseline</td>
+        <td class="file-col">—</td>
+        <td>—</td>
+        <td>—</td>
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--red)">42%</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #1</td>
+        <td class="file-col">middleware.ts</td>
+        <td><span class="tag low">0/10</span></td>
+        <td><span class="tag good">9/10</span></td>
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--orange)">54%</td>
+        <td><span class="delta-pill">+12pt</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #2</td>
+        <td class="file-col">lib/langgraph/llm-factory.ts</td>
+        <td><span class="tag low">2/10</span></td>
+        <td><span class="tag good">8/10</span></td>
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--orange)">62%</td>
+        <td><span class="delta-pill">+8pt</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #3</td>
+        <td class="file-col">lib/auth/rbac.ts</td>
+        <td><span class="tag mid">5/10</span></td>
+        <td><span class="tag good">9/10</span></td>
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent)">68%</td>
+        <td><span class="delta-pill">+6pt</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #4</td>
+        <td class="file-col">app/api/agent/route.ts</td>
+        <td><span class="tag mid">5/10</span></td>
+        <td><span class="tag good">8/10</span></td>
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent)">73%</td>
+        <td><span class="delta-pill">+5pt</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #5</td>
+        <td class="file-col">lib/qstash/verify.ts</td>
+        <td><span class="tag mid">6/10</span></td>
+        <td><span class="tag good">9/10</span></td>
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent)">77%</td>
+        <td><span class="delta-pill">+4pt</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #6</td>
+        <td class="file-col">lib/supabase/server.ts</td>
+        <td><span class="tag mid">6/10</span></td>
+        <td><span class="tag good">8/10</span></td>
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green)">80%</td>
+        <td><span class="delta-pill">+3pt</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #7</td>
+        <td class="file-col">lib/qstash/client.ts</td>
+        <td><span class="tag high">7/10</span></td>
+        <td><span class="tag good">9/10</span></td>
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green)">83%</td>
+        <td><span class="delta-pill">+3pt</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #8</td>
+        <td class="file-col">scratch/ cleanup</td>
+        <td style="color:var(--text3)">—</td>
+        <td style="color:var(--text3)">—</td>
+        <td style="font-family:'Syne',sans-serif;font-weight:800;color:var(--green)">85%</td>
+        <td><span class="delta-pill">+2pt</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="color:var(--text2);font-size:13px;margin-top:8px;">
+    * Sprint readiness is a composite of: security controls functional (40%), architecture spec compliance (30%), code quality &amp; maintainability (20%), operational readiness (10%).
+    Scores are estimates based on static analysis — not automated metrics.
+  </p>
+</div>
+
+<!-- ═════════════════════════════════ TAB: SPRINT SCORECARD -->
+<div class="tab-panel" id="tab-sprint">
+  <div class="final-score">
+    <h2>Sprint Readiness — Before vs After</h2>
+
+    <div class="score-row">
+      <span class="score-row-label">Before</span>
+      <div class="score-row-bar"><div class="score-row-fill before" style="width:42%"></div></div>
+      <span class="score-row-num before">42%</span>
+    </div>
+    <div class="score-row">
+      <span class="score-row-label">After</span>
+      <div class="score-row-bar"><div class="score-row-fill after" style="width:85%"></div></div>
+      <span class="score-row-num after">85%</span>
+    </div>
+  </div>
+
+  <p class="section-title">Dimension Breakdown</p>
+
+  <table class="ablation-table">
+    <thead>
+      <tr>
+        <th>Dimension</th>
+        <th>Before</th>
+        <th>After</th>
+        <th>Key Gap</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Security Controls</strong></td>
+        <td style="color:var(--red)">20%</td>
+        <td style="color:var(--green)">82%</td>
+        <td style="color:var(--text2);font-size:13px;">middleware missing; RBAC fallback escalation; QStash replay possible</td>
+      </tr>
+      <tr>
+        <td><strong>Spec Compliance</strong></td>
+        <td style="color:var(--red)">45%</td>
+        <td style="color:var(--green)">88%</td>
+        <td style="color:var(--text2);font-size:13px;">BYOK absent; model tier routing not implemented; agent/approve stub empty</td>
+      </tr>
+      <tr>
+        <td><strong>Code Quality</strong></td>
+        <td style="color:var(--orange)">60%</td>
+        <td style="color:var(--green)">88%</td>
+        <td style="color:var(--text2);font-size:13px;">swallowed errors; any types; duplicate Supabase clients; dead code</td>
+      </tr>
+      <tr>
+        <td><strong>Operational</strong></td>
+        <td style="color:var(--orange)">50%</td>
+        <td style="color:var(--green)">82%</td>
+        <td style="color:var(--text2);font-size:13px;">no .env.example; 16 scratch files in repo; no rate limiting</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout mt-24">
+    <strong>What the sprint got right (and deserves credit for):</strong>
+    The RLS implementation in <code>rls-client.ts</code> is genuinely thoughtful — dual enforcement via both HTTP headers and <code>SET LOCAL</code> is a belt-and-suspenders approach that covers both the PostgREST path and the direct Postgres path. The Nango <code>getConnectionToken</code> always verifying ownership via Supabase before calling the Nango API is exactly the right pattern. The throttle logic in <code>qstash/client.ts</code> with atomic double-claim prevention is production-grade. The Supabase migration files are comprehensive and well-structured.
+  </div>
+
+  <div class="callout mt-24" style="border-color:rgba(248,113,113,0.25);background:rgba(248,113,113,0.06);">
+    <strong style="color:var(--red);">The single most urgent fix before any demo or staging deployment:</strong> Create <code>middleware.ts</code>. Every other security control in this codebase — RLS, RBAC headers, Nango ownership checks — assumes the user has been authenticated. Without middleware, none of those assumptions hold and the application is fully open.
+  </div>
+</div>
+
+</div><!-- container -->
+
+<footer>
+<div class="container">
+  Athene AI · Week 1 Sprint Code Review · Generated April 2026 · 8 files reviewed · 19 issues found · 3 critical · 8 high · 5 medium · 3 low
+</div>
+</footer>
+
+<script>
+function toggle(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
+}
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+// Animate bars on load
+window.addEventListener('load', () => {
+  document.querySelectorAll('.sc-bar, .rank-fill, .impact-fill, .score-row-fill').forEach(el => {
+    const w = el.style.width;
+    el.style.width = '0';
+    setTimeout(() => { el.style.width = w; }, 100);
+  });
+});
+</script>
+</body>
+</html>
