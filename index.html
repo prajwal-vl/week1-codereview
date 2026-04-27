@@ -3,1418 +3,2088 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Athene AI — Week 1 Sprint Code Review</title>
+<title>Athene AI — Full Sprint Code Review</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=DM+Sans:wght@300;400;500&display=swap');
 
-  :root {
-    --bg: #0b0c0e;
-    --surface: #131417;
-    --surface2: #1a1c21;
-    --border: #22252c;
-    --border2: #2d313b;
-    --accent: #f0c14a;
-    --accent2: #e07b4a;
-    --green: #4ade80;
-    --red: #f87171;
-    --orange: #fb923c;
-    --blue: #60a5fa;
-    --purple: #a78bfa;
-    --text: #e8e9ec;
-    --text2: #8b8fa8;
-    --text3: #5a5f75;
-    --score-high: #4ade80;
-    --score-mid: #fb923c;
-    --score-low: #f87171;
-  }
+:root {
+  --bg: #080a0d;
+  --surface: #0e1117;
+  --s2: #141820;
+  --s3: #1a2030;
+  --border: #1e2535;
+  --border2: #2a3347;
+  --accent: #e8b84b;
+  --accent2: #d4753a;
+  --blue: #5b9cf6;
+  --green: #4ecb71;
+  --red: #f05252;
+  --orange: #f5813f;
+  --purple: #9d7ff4;
+  --cyan: #3ecfcf;
+  --text: #dde2ef;
+  --text2: #7a86a3;
+  --text3: #404a63;
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    line-height: 1.7;
-  }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
 
-  /* ── Layout ── */
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+/* ── HEADER ─────────────────────────────────────── */
+.hero {
+  padding: 64px 0 48px;
+  border-bottom: 1px solid var(--border);
+  background: radial-gradient(ellipse 60% 50% at 50% -10%, rgba(91,156,246,0.08), transparent);
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
 
-  /* ── Header ── */
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 48px 0 40px;
-    margin-bottom: 56px;
-  }
-  .header-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: 38px;
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    margin-bottom: 12px;
-  }
-  .header-sub {
-    color: var(--text2);
-    font-size: 15px;
-    font-weight: 300;
-  }
+.hero-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: 'Fraunces', serif;
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+}
+.hero h1 em { font-style: italic; font-weight: 300; color: var(--text2); }
+.hero-sub {
+  color: var(--text2);
+  font-size: 15px;
+  font-weight: 300;
+  max-width: 600px;
+  margin-bottom: 40px;
+}
 
-  /* ── Section titles ── */
-  .section-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+/* ── SCORE STRIP ─────────────────────────────────── */
+.score-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 56px;
+}
+.score-cell {
+  background: var(--surface);
+  padding: 20px 18px;
+  text-align: center;
+}
+.score-cell .val {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 900;
+  display: block;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.score-cell .lbl {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.c-red { color: var(--red); }
+.c-green { color: var(--green); }
+.c-orange { color: var(--orange); }
+.c-accent { color: var(--accent); }
+.c-blue { color: var(--blue); }
+.c-purple { color: var(--purple); }
 
-  /* ── Sprint summary band ── */
-  .sprint-band {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 28px 32px;
-    margin-bottom: 48px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-  }
-  .band-stat { text-align: center; }
-  .band-stat .num {
-    font-family: 'Syne', sans-serif;
-    font-size: 32px;
-    font-weight: 800;
-    display: block;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .band-stat .label {
-    font-size: 12px;
-    color: var(--text2);
-    font-family: 'JetBrains Mono', monospace;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-  .num.green { color: var(--green); }
-  .num.orange { color: var(--orange); }
-  .num.red { color: var(--red); }
-  .num.accent { color: var(--accent); }
+/* ── LEGEND ──────────────────────────────────────── */
+.legend {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text2);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.leg-dot { width:8px; height:8px; border-radius:50%; }
 
-  /* ── File card ── */
-  .file-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    margin-bottom: 28px;
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
-  .file-card:hover { border-color: var(--border2); }
+/* ── NAV TABS ─────────────────────────────────────── */
+.nav-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.nav-tab {
+  padding: 10px 20px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--text3);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  transition: all 0.18s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+.nav-tab:hover { color: var(--text2); }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-  .file-header {
-    padding: 20px 28px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border);
-    user-select: none;
-  }
-  .file-header:hover { background: var(--surface2); }
+.panel { display: none; padding-top: 40px; }
+.panel.active { display: block; }
 
-  .file-rank {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text3);
-    width: 28px;
-    flex-shrink: 0;
-  }
+/* ── TASK SECTION ────────────────────────────────── */
+.task-block {
+  margin-bottom: 48px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
 
-  .file-path {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--blue);
-    flex: 1;
-  }
+.task-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 28px;
+  background: var(--surface);
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid var(--border);
+}
+.task-head:hover { background: var(--s2); }
 
-  .score-badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 4px 10px;
-    border-radius: 6px;
-    flex-shrink: 0;
-  }
-  .score-badge.high { background: rgba(74,222,128,0.12); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
-  .score-badge.mid  { background: rgba(251,146,60,0.12);  color: var(--orange); border: 1px solid rgba(251,146,60,0.25); }
-  .score-badge.low  { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+.task-id {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 5px;
+  background: rgba(91,156,246,0.1);
+  color: var(--blue);
+  border: 1px solid rgba(91,156,246,0.2);
+  white-space: nowrap;
+}
+.task-name {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 600;
+  flex: 1;
+}
+.task-score-pair { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.score-pill {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.sp-red { background: rgba(240,82,82,0.12); color: var(--red); border: 1px solid rgba(240,82,82,0.2); }
+.sp-orange { background: rgba(245,129,63,0.12); color: var(--orange); border: 1px solid rgba(245,129,63,0.2); }
+.sp-green { background: rgba(78,203,113,0.12); color: var(--green); border: 1px solid rgba(78,203,113,0.2); }
+.arrow { font-size: 11px; color: var(--text3); transition: transform 0.22s; }
+.task-block.open .arrow { transform: rotate(90deg); }
 
-  .impact-bar-wrap { display: flex; align-items: center; gap: 8px; width: 120px; flex-shrink: 0; }
-  .impact-label { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; width: 26px; text-align: right; }
-  .impact-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .impact-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
-  .impact-fill.green { background: var(--green); }
-  .impact-fill.orange { background: var(--orange); }
-  .impact-fill.red { background: var(--red); }
-  .impact-fill.accent { background: var(--accent); }
+.task-body { display: none; }
+.task-block.open .task-body { display: block; }
 
-  .chevron {
-    font-size: 12px;
-    color: var(--text3);
-    transition: transform 0.25s;
-    flex-shrink: 0;
-  }
-  .file-card.open .chevron { transform: rotate(90deg); }
+/* ── FILE REVIEW INSIDE TASK ─────────────────────── */
+.file-review {
+  border-bottom: 1px solid var(--border);
+}
+.file-review:last-child { border-bottom: none; }
 
-  .file-body { display: none; padding: 28px; }
-  .file-card.open .file-body { display: block; }
+.file-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 28px;
+  background: var(--s2);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+.file-bar:hover { background: var(--s3); }
 
-  /* ── Issues list ── */
-  .issues-section { margin-bottom: 24px; }
-  .issues-section h4 {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text2);
-    margin-bottom: 12px;
-  }
+.file-path {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--blue);
+  flex: 1;
+}
+.file-score-change {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+}
+.f-arrow { font-size: 10px; color: var(--text3); transition: transform 0.18s; }
+.file-review.open .f-arrow { transform: rotate(90deg); }
+.file-content { display: none; padding: 28px; }
+.file-review.open .file-content { display: block; }
 
-  .issue-row {
-    display: flex;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .issue-row:last-child { border-bottom: none; }
+/* ── ISSUE ROWS ──────────────────────────────────── */
+.issue-list { margin-bottom: 24px; }
+.issue-list h4 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+.issue {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.issue:last-child { border-bottom: none; }
+.sev-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:8px; }
+.sev-critical { background:var(--red); box-shadow: 0 0 6px rgba(240,82,82,0.5); }
+.sev-high { background:var(--orange); }
+.sev-medium { background:var(--accent); }
+.sev-low { background:var(--blue); }
+.sev-good { background:var(--green); }
+.issue-body { flex: 1; }
+.issue-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+.issue-why { font-size: 12px; color: var(--text2); line-height: 1.65; }
 
-  .severity-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-top: 8px;
-  }
-  .sev-critical { background: var(--red); box-shadow: 0 0 6px var(--red); }
-  .sev-high     { background: var(--orange); }
-  .sev-medium   { background: var(--accent); }
-  .sev-low      { background: var(--blue); }
+/* ── TAGS ────────────────────────────────────────── */
+.tag {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin-right: 5px;
+}
+.t-critical { background:rgba(240,82,82,0.15); color:var(--red); border:1px solid rgba(240,82,82,0.25); }
+.t-high { background:rgba(245,129,63,0.15); color:var(--orange); border:1px solid rgba(245,129,63,0.25); }
+.t-medium { background:rgba(232,184,75,0.15); color:var(--accent); border:1px solid rgba(232,184,75,0.25); }
+.t-low { background:rgba(91,156,246,0.15); color:var(--blue); border:1px solid rgba(91,156,246,0.25); }
+.t-good { background:rgba(78,203,113,0.12); color:var(--green); border:1px solid rgba(78,203,113,0.2); }
+.t-note { background:rgba(157,127,244,0.12); color:var(--purple); border:1px solid rgba(157,127,244,0.2); }
 
-  .issue-content { flex: 1; }
-  .issue-title { font-weight: 500; font-size: 14px; margin-bottom: 3px; }
-  .issue-why { font-size: 13px; color: var(--text2); line-height: 1.6; }
+/* ── CODE DIFF ───────────────────────────────────── */
+.diff { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px 0; }
+.diff-1 { grid-template-columns: 1fr; }
+.code-box { border-radius:10px; overflow:hidden; border:1px solid var(--border); }
+.code-label {
+  padding: 7px 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--border);
+}
+.cl-before { background:rgba(240,82,82,0.08); color:var(--red); }
+.cl-after  { background:rgba(78,203,113,0.08); color:var(--green); }
+.cl-fix    { background:rgba(91,156,246,0.08); color:var(--blue); }
+.code-box pre {
+  background: #080b10;
+  padding: 14px 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  line-height: 1.7;
+  overflow-x: auto;
+  color: #b0bbd4;
+}
+.k  { color: #ff79a8; }   /* keyword */
+.s  { color: #82d9f5; }   /* string */
+.c  { color: #4a5570; font-style:italic; } /* comment */
+.fn { color: #c9a0f5; }   /* function */
+.n  { color: #f5a623; }   /* number */
+.add{ color: var(--green); }
+.del{ color: var(--red); }
+.hl { color: var(--accent); }
+.p  { color: #5b9cf6; }   /* property */
 
-  /* ── Before / After ── */
-  .before-after {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-  .code-block {
-    background: #0d0f13;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  .code-block-label {
-    padding: 8px 14px;
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    letter-spacing: 0.08em;
-    border-bottom: 1px solid var(--border);
-  }
-  .code-block-label.before { color: var(--red); background: rgba(248,113,113,0.06); }
-  .code-block-label.after  { color: var(--green); background: rgba(74,222,128,0.06); }
-  .code-block pre {
-    padding: 14px 16px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    line-height: 1.65;
-    overflow-x: auto;
-    white-space: pre;
-    color: #c9d1d9;
-  }
-  .code-block pre .kw  { color: #ff7b72; }
-  .code-block pre .str { color: #a5d6ff; }
-  .code-block pre .cm  { color: #8b949e; font-style: italic; }
-  .code-block pre .fn  { color: #d2a8ff; }
-  .code-block pre .num { color: var(--orange); }
-  .code-block pre .add { color: var(--green); }
-  .code-block pre .del { color: var(--red); }
-  .code-block pre .acc { color: var(--accent); }
+/* ── SCORE BARS ──────────────────────────────────── */
+.score-compare { margin: 16px 0; }
+.sc-row { display:flex; align-items:center; gap:14px; margin-bottom:8px; }
+.sc-lbl { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text3); width:50px; }
+.sc-track { flex:1; height:5px; background:var(--border); border-radius:3px; overflow:hidden; }
+.sc-bar { height:100%; border-radius:3px; transition: width 1s cubic-bezier(.4,0,.2,1); }
+.sc-num { font-family:'Fraunces',serif; font-size:15px; font-weight:900; width:38px; text-align:right; }
 
-  /* ── Score comparison ── */
-  .score-compare {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 0;
-    margin-top: 12px;
-  }
-  .score-compare .sc-label { font-size: 12px; color: var(--text2); width: 80px; }
-  .sc-bar-wrap { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; position: relative; }
-  .sc-bar { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
-  .sc-val { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; width: 42px; text-align: right; }
+/* ── PLAN LIST ───────────────────────────────────── */
+.plan { margin: 16px 0; }
+.plan h4 { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--text3); margin-bottom:10px; }
+.plan-item { display:flex; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px; }
+.plan-item:last-child { border-bottom:none; }
+.pn {
+  font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600;
+  background:rgba(232,184,75,0.1); color:var(--accent); border:1px solid rgba(232,184,75,0.2);
+  border-radius:4px; padding:2px 6px; flex-shrink:0; height:fit-content; margin-top:2px;
+}
 
-  /* ── Improvement plan ── */
-  .plan-list { list-style: none; }
-  .plan-list li {
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    gap: 12px;
-    font-size: 14px;
-  }
-  .plan-list li:last-child { border-bottom: none; }
-  .plan-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--accent);
-    background: rgba(240,193,74,0.1);
-    border: 1px solid rgba(240,193,74,0.2);
-    border-radius: 4px;
-    padding: 2px 7px;
-    flex-shrink: 0;
-    height: fit-content;
-    margin-top: 2px;
-  }
+/* ── CALLOUT ─────────────────────────────────────── */
+.callout {
+  border-radius:10px;
+  padding:14px 18px;
+  font-size:13px;
+  line-height:1.65;
+  color:var(--text2);
+  margin:16px 0;
+}
+.ca-warn { background:rgba(232,184,75,0.06); border:1px solid rgba(232,184,75,0.18); }
+.ca-err  { background:rgba(240,82,82,0.06);  border:1px solid rgba(240,82,82,0.18); }
+.ca-ok   { background:rgba(78,203,113,0.06); border:1px solid rgba(78,203,113,0.18); }
+.ca-info { background:rgba(91,156,246,0.06); border:1px solid rgba(91,156,246,0.18); }
+.callout strong { color: var(--text); }
 
-  /* ── Ablation table ── */
-  .ablation-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-    margin-bottom: 40px;
-  }
-  .ablation-table th {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text3);
-    text-align: left;
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-  }
-  .ablation-table td {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: middle;
-  }
-  .ablation-table tr:last-child td { border-bottom: none; }
-  .ablation-table tr:hover td { background: var(--surface2); }
-  .ablation-table .file-col {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--blue);
-  }
-  .delta-pill {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    padding: 3px 8px;
-    border-radius: 5px;
-    background: rgba(74,222,128,0.1);
-    color: var(--green);
-    border: 1px solid rgba(74,222,128,0.2);
-    white-space: nowrap;
-  }
+/* ── ABLATION TABLE ──────────────────────────────── */
+.abl-table { width:100%; border-collapse:collapse; font-size:13px; margin-bottom:32px; }
+.abl-table th {
+  font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--text3); text-align:left; padding:10px 16px; border-bottom:1px solid var(--border);
+}
+.abl-table td { padding:11px 16px; border-bottom:1px solid var(--border); vertical-align:middle; }
+.abl-table tr:hover td { background:var(--s2); }
+.abl-table .mono { font-family:'IBM Plex Mono',monospace; font-size:11px; }
+.dp { font-family:'IBM Plex Mono',monospace; font-size:11px; padding:3px 8px; border-radius:5px; }
+.dp-g { background:rgba(78,203,113,0.1); color:var(--green); border:1px solid rgba(78,203,113,0.2); }
 
-  /* ── Final scorecard ── */
-  .final-score {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 36px;
-    margin-top: 48px;
-    margin-bottom: 48px;
-  }
-  .final-score h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 28px;
-  }
-  .score-row {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 20px;
-  }
-  .score-row:last-child { margin-bottom: 0; }
-  .score-row-label {
-    font-size: 13px;
-    color: var(--text2);
-    width: 60px;
-    flex-shrink: 0;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .score-row-bar { flex: 1; height: 12px; background: var(--border); border-radius: 6px; overflow: hidden; }
-  .score-row-fill { height: 100%; border-radius: 6px; }
-  .score-row-fill.before { background: linear-gradient(90deg, #f87171, #fb923c); }
-  .score-row-fill.after  { background: linear-gradient(90deg, #4ade80, #60a5fa); }
-  .score-row-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 22px;
-    font-weight: 800;
-    width: 60px;
-    text-align: right;
-  }
-  .score-row-num.before { color: var(--orange); }
-  .score-row-num.after  { color: var(--green); }
+/* ── FINAL SCORECARD ─────────────────────────────── */
+.final-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:40px; margin:32px 0; }
+.final-card h2 { font-family:'Fraunces',serif; font-size:24px; font-weight:900; margin-bottom:28px; }
+.big-bar-row { display:flex; align-items:center; gap:20px; margin-bottom:18px; }
+.big-bar-lbl { font-size:13px; color:var(--text2); width:56px; flex-shrink:0; }
+.big-track { flex:1; height:10px; background:var(--border); border-radius:5px; overflow:hidden; }
+.big-fill { height:100%; border-radius:5px; }
+.bef-fill { background:linear-gradient(90deg, var(--red), var(--orange)); }
+.aft-fill { background:linear-gradient(90deg, var(--green), var(--cyan)); }
+.big-num { font-family:'Fraunces',serif; font-size:22px; font-weight:900; width:52px; text-align:right; }
 
-  .callout {
-    background: rgba(240,193,74,0.06);
-    border: 1px solid rgba(240,193,74,0.2);
-    border-radius: 10px;
-    padding: 16px 20px;
-    font-size: 14px;
-    color: var(--text2);
-    margin-top: 20px;
-    line-height: 1.65;
-  }
-  .callout strong { color: var(--accent); }
+/* ── IMPACT RANKING ──────────────────────────────── */
+.rank-list { margin:20px 0; }
+.rank-row {
+  display:flex; align-items:center; gap:16px; padding:12px 0; border-bottom:1px solid var(--border);
+}
+.rank-row:last-child { border-bottom:none; }
+.rank-n { font-family:'Fraunces',serif; font-size:20px; font-weight:900; color:var(--text3); width:28px; flex-shrink:0; }
+.rank-info { flex:1; }
+.rank-task { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--blue); margin-bottom:2px; }
+.rank-file { font-size:12px; color:var(--text2); }
+.rank-bar-wrap { width:140px; height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+.rank-fill { height:100%; border-radius:2px; background:linear-gradient(90deg, var(--accent), var(--accent2)); }
+.rank-delta { font-family:'Fraunces',serif; font-size:14px; font-weight:900; color:var(--accent); width:42px; text-align:right; }
 
-  /* ── Rank chart ── */
-  .rank-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .rank-row:last-child { border-bottom: none; }
-  .rank-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--text3);
-    width: 28px;
-    flex-shrink: 0;
-  }
-  .rank-file {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--blue);
-    flex: 1;
-  }
-  .rank-impact {
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--accent);
-    width: 50px;
-    text-align: right;
-  }
-  .rank-bar-wrap { width: 160px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .rank-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
-
-  /* ── Tabs ── */
-  .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
-  .tab {
-    padding: 10px 18px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    color: var(--text3);
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    margin-bottom: -1px;
-  }
-  .tab:hover { color: var(--text2); }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-
-  /* ── Misc ── */
-  .mt-24 { margin-top: 24px; }
-  .mt-16 { margin-top: 16px; }
-  .mb-8 { margin-bottom: 8px; }
-  .tag {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 500;
-    margin-right: 4px;
-  }
-  .tag.critical { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
-  .tag.high     { background: rgba(251,146,60,0.15);  color: var(--orange); border: 1px solid rgba(251,146,60,0.25); }
-  .tag.medium   { background: rgba(240,193,74,0.15);  color: var(--accent); border: 1px solid rgba(240,193,74,0.25); }
-  .tag.low      { background: rgba(96,165,250,0.15);  color: var(--blue); border: 1px solid rgba(96,165,250,0.25); }
-  .tag.good     { background: rgba(74,222,128,0.12);  color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
-
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 32px 0;
-    color: var(--text3);
-    font-size: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    margin-top: 32px;
-  }
+footer { border-top:1px solid var(--border); padding:28px 0; color:var(--text3); font-family:'IBM Plex Mono',monospace; font-size:11px; margin-top:32px; }
 </style>
 </head>
 <body>
-<div class="container">
 
-<!-- ══════════════════════════════════════════════════════ HEADER -->
-<header>
-  <div class="header-tag">Athene AI · Week 1 Sprint · Code Review Report</div>
-  <h1>Production Readiness<br>Ablation Study</h1>
-  <p class="header-sub">File-by-file analysis — issues, fixes, impact scores, and sprint-wide readiness delta</p>
-</header>
+<!-- HERO -->
+<div class="hero">
+<div class="wrap">
+  <div class="hero-eyebrow">Athene AI · Week 1 Sprint · 9 Tasks · Full Production Review</div>
+  <h1>Code Review<br><em>Task by Task</em></h1>
+  <p class="hero-sub">Every file across all 9 Done tickets analysed for production readiness — issues, root causes, fixes, and before/after scores.</p>
 
-<!-- ══════════════════════════════════════════════════════ SPRINT SUMMARY -->
-<div class="sprint-band">
-  <div class="band-stat"><span class="num accent">8</span><span class="label">Sprint Issues</span></div>
-  <div class="band-stat"><span class="num red">42%</span><span class="label">Readiness Before</span></div>
-  <div class="band-stat"><span class="num green">81%</span><span class="label">Readiness After</span></div>
-  <div class="band-stat"><span class="num orange">+39pt</span><span class="label">Total Delta</span></div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════ TABS -->
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('files')">File Reviews</div>
-  <div class="tab" onclick="switchTab('ranking')">Impact Ranking</div>
-  <div class="tab" onclick="switchTab('ablation')">Ablation Table</div>
-  <div class="tab" onclick="switchTab('sprint')">Sprint Scorecard</div>
-</div>
-
-<!-- ═════════════════════════════════ TAB: FILE REVIEWS -->
-<div class="tab-panel active" id="tab-files">
-<p class="section-title">File-by-File Analysis</p>
-
-<!-- ─── FILE 1: middleware.ts (MISSING) -->
-<div class="file-card open" id="card-0">
-  <div class="file-header" onclick="toggle('card-0')">
-    <span class="file-rank">#1</span>
-    <span class="file-path">middleware.ts &nbsp;<span style="color:var(--red);font-size:11px;">— MISSING</span></span>
-    <span class="score-badge low">0 / 10 → 9 / 10</span>
-    <div class="impact-bar-wrap">
-      <span class="impact-label">+12pt</span>
-      <div class="impact-bar"><div class="impact-fill green" style="width:100%"></div></div>
-    </div>
-    <span class="chevron">▶</span>
+  <div class="score-strip">
+    <div class="score-cell"><span class="val c-red">42%</span><span class="lbl">Before</span></div>
+    <div class="score-cell"><span class="val c-green">96%</span><span class="lbl">After</span></div>
+    <div class="score-cell"><span class="val c-orange">+54pt</span><span class="lbl">Total Delta</span></div>
+    <div class="score-cell"><span class="val c-red">4</span><span class="lbl">Critical</span></div>
+    <div class="score-cell"><span class="val c-orange">11</span><span class="lbl">High</span></div>
+    <div class="score-cell"><span class="val c-accent">8</span><span class="lbl">Medium/Low</span></div>
   </div>
-  <div class="file-body">
-    <div class="issues-section">
-      <h4>Issues Found</h4>
-      <div class="issue-row">
-        <div class="severity-dot sev-critical"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag critical">CRITICAL</span> File does not exist — all routes are publicly accessible</div>
-          <div class="issue-why">Without <code>middleware.ts</code>, Clerk's <code>clerkMiddleware()</code> never runs. Every <code>/api/*</code> route and every <code>/(dashboard)/*</code> page is fully unauthenticated. Any user can hit the agent route, read thread state, and trigger write actions — no credentials required. This is the single most severe gap in the codebase.</div>
-        </div>
-      </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-critical"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag critical">CRITICAL</span> RBAC context headers never get injected</div>
-          <div class="issue-why"><code>rls-client.ts</code> reads <code>x-current-org-id</code>, <code>x-current-user-role</code>, etc. from request headers — but those headers are only set by middleware. Without it, <code>getContextFromHeaders()</code> always returns <code>null</code>, so the RLS wrapper silently falls back to the wrong identity.</div>
-        </div>
-      </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-high"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag high">HIGH</span> Dashboard pages not protected — no redirect to sign-in</div>
-          <div class="issue-why">Unauthenticated visitors can browse <code>/chat</code>, <code>/insights</code>, <code>/admin</code> directly. Clerk's server-side <code>auth()</code> calls inside those pages will throw rather than redirect.</div>
-        </div>
-      </div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:var(--red)"></div>Critical</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--orange)"></div>High</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--accent)"></div>Medium</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div>Low</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div>Good / Keep</div>
+  </div>
+</div>
+</div>
+
+<!-- TABS -->
+<div class="wrap">
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="st('tasks')">Task Reviews</button>
+  <button class="nav-tab" onclick="st('ablation')">Ablation Table</button>
+  <button class="nav-tab" onclick="st('ranking')">Impact Ranking</button>
+  <button class="nav-tab" onclick="st('scorecard')">Sprint Scorecard</button>
+</div>
+
+<!-- ════════════════════ PANEL: TASKS ════════════════════ -->
+<div class="panel active" id="p-tasks">
+
+<!-- ── ATH-23: Clerk Auth + Middleware ─────────────────── -->
+<div class="task-block" id="t23">
+  <div class="task-head" onclick="tt('t23')">
+    <span class="task-id">ATH-23</span>
+    <span class="task-name">Integrate Clerk auth — middleware, JWT verification, role mapping</span>
+    <div class="task-score-pair">
+      <span class="score-pill sp-red">Before 2/10</span>
+      <span style="color:var(--text3);font-size:12px;">→</span>
+      <span class="score-pill sp-green">After 10/10</span>
     </div>
+    <span class="arrow">▶</span>
+  </div>
+  <div class="task-body">
 
-    <div class="issues-section mt-24">
-      <h4>Prioritised Fix Plan</h4>
-      <ul class="plan-list">
-        <li><span class="plan-num">P1</span> Create <code>middleware.ts</code> using <code>clerkMiddleware()</code>, protect <code>/api/*</code> and <code>/(dashboard)/*</code>, public routes: <code>/</code>, <code>/sign-in</code>, <code>/sign-up</code></li>
-        <li><span class="plan-num">P2</span> Inside middleware, after auth, call <code>resolveUserAccess()</code> and inject RBAC headers onto the response object so downstream handlers can use <code>getContextFromHeaders()</code></li>
-        <li><span class="plan-num">P3</span> Add a matcher config so middleware doesn't run on <code>/_next/static</code> or <code>/public</code> assets (performance)</li>
-      </ul>
-    </div>
-
-    <div class="issues-section mt-24">
-      <h4>Before → After</h4>
-      <div class="before-after">
-        <div class="code-block">
-          <div class="code-block-label before">✗ BEFORE — file missing</div>
-          <pre><span class="cm">// middleware.ts
-// *** FILE DOES NOT EXIST ***
-// All routes are open to the world.</span></pre>
+    <!-- FILE: middleware.ts (MISSING) -->
+    <div class="file-review" id="f-mid">
+      <div class="file-bar" onclick="ft('f-mid')">
+        <span class="file-path">middleware.ts <span style="color:var(--red);font-size:10px;">— FILE MISSING</span></span>
+        <span class="file-score-change">0 → 10</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-critical"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-critical">CRITICAL</span> File does not exist — all routes publicly accessible</div>
+              <div class="issue-why">Without <code>middleware.ts</code>, <code>clerkMiddleware()</code> never runs. Every <code>/api/*</code> route and every <code>/(dashboard)/*</code> page is open to the internet — no auth, no session. This is the single most catastrophic gap in the codebase.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-critical"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-critical">CRITICAL</span> RBAC headers never injected — rls-client.ts always returns null</div>
+              <div class="issue-why"><code>getContextFromHeaders()</code> reads <code>x-current-org-id</code>, <code>x-current-user-role</code> etc. These are only set by middleware. Without middleware, every RLS-protected query silently runs with no context and either fails or uses wrong identity.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Dashboard pages have no redirect — server components throw instead of redirecting</div>
+              <div class="issue-why">The dashboard layout calls <code>auth()</code> and manually redirects, but that only works if Clerk's middleware session is already established. Without middleware, <code>auth()</code> returns empty values and layouts redirect to wrong places.</div>
+            </div>
+          </div>
         </div>
-        <div class="code-block">
-          <div class="code-block-label after">✓ AFTER — production-ready</div>
-          <pre><span class="kw">import</span> { clerkMiddleware, createRouteMatcher }
-  <span class="kw">from</span> <span class="str">'@clerk/nextjs/server'</span>;
-<span class="kw">import</span> { NextResponse } <span class="kw">from</span> <span class="str">'next/server'</span>;
-<span class="kw">import</span> { resolveUserAccess } <span class="kw">from</span> <span class="str">'@/lib/auth/rbac'</span>;
 
-<span class="kw">const</span> <span class="fn">isPublic</span> = <span class="fn">createRouteMatcher</span>([
-  <span class="str">'/'</span>, <span class="str">'/sign-in(.*)'</span>, <span class="str">'/sign-up(.*)'</span>
+        <div class="plan">
+          <h4>Fix Plan</h4>
+          <div class="plan-item"><span class="pn">P1</span> Create middleware.ts with clerkMiddleware(), protect all routes except /, /sign-in, /sign-up</div>
+          <div class="plan-item"><span class="pn">P2</span> Resolve RBAC in middleware, inject x-current-* headers onto the response for downstream use</div>
+          <div class="plan-item"><span class="pn">P3</span> Add matcher config to skip _next/static, _next/image, favicon assets</div>
+        </div>
+
+        <div class="diff">
+          <div class="code-box">
+            <div class="code-label cl-before">✗ BEFORE — file missing</div>
+            <pre><span class="c">// middleware.ts
+// *** DOES NOT EXIST ***
+// Every URL is open to the world.</span></pre>
+          </div>
+          <div class="code-box">
+            <div class="code-label cl-after">✓ AFTER — complete middleware</div>
+            <pre><span class="k">import</span> { clerkMiddleware, createRouteMatcher }
+  <span class="k">from</span> <span class="s">'@clerk/nextjs/server'</span>;
+<span class="k">import</span> { NextResponse } <span class="k">from</span> <span class="s">'next/server'</span>;
+<span class="k">import</span> { resolveUserAccess } <span class="k">from</span> <span class="s">'@/lib/auth/rbac'</span>;
+
+<span class="k">const</span> <span class="fn">isPublic</span> = <span class="fn">createRouteMatcher</span>([
+  <span class="s">'/'</span>, <span class="s">'/sign-in(.*)'</span>, <span class="s">'/sign-up(.*)'</span>
 ]);
 
-<span class="kw">export default</span> <span class="fn">clerkMiddleware</span>(<span class="kw">async</span> (auth, req) => {
-  <span class="kw">if</span> (<span class="fn">isPublic</span>(req)) <span class="kw">return</span>;
-  <span class="kw">const</span> { userId, orgId, orgRole } = <span class="kw">await</span> auth.<span class="fn">protect</span>();
-  <span class="kw">const</span> access = <span class="kw">await</span> <span class="fn">resolveUserAccess</span>(
-    userId, orgId, orgRole
+<span class="k">export default</span> <span class="fn">clerkMiddleware</span>(<span class="k">async</span> (auth, req) => {
+  <span class="k">if</span> (<span class="fn">isPublic</span>(req)) <span class="k">return</span> NextResponse.<span class="fn">next</span>();
+  <span class="k">const</span> { userId, orgId, orgRole } =
+    <span class="k">await</span> auth.<span class="fn">protect</span>();
+  <span class="k">const</span> access = <span class="k">await</span> <span class="fn">resolveUserAccess</span>(
+    userId, orgId ?? <span class="s">''</span>
   );
-  <span class="kw">const</span> res = NextResponse.<span class="fn">next</span>();
-  res.headers.<span class="fn">set</span>(<span class="str">'x-current-org-id'</span>, orgId);
-  res.headers.<span class="fn">set</span>(<span class="str">'x-current-user-id'</span>,
-    access.internal_user_id ?? <span class="str">''</span>);
-  res.headers.<span class="fn">set</span>(<span class="str">'x-current-user-role'</span>,
-    access.role ?? <span class="str">'member'</span>);
-  res.headers.<span class="fn">set</span>(<span class="str">'x-current-user-dept-id'</span>,
-    access.dept_id ?? <span class="str">''</span>);
-  <span class="kw">return</span> res;
+  <span class="k">const</span> headers = <span class="k">new</span> Headers(req.headers);
+  headers.<span class="fn">set</span>(<span class="s">'x-current-org-id'</span>, orgId ?? <span class="s">''</span>);
+  headers.<span class="fn">set</span>(<span class="s">'x-current-user-id'</span>,
+    access.internal_user_id ?? <span class="s">''</span>);
+  headers.<span class="fn">set</span>(<span class="s">'x-current-user-role'</span>,
+    access.role ?? <span class="s">'member'</span>);
+  headers.<span class="fn">set</span>(<span class="s">'x-current-user-dept-id'</span>,
+    access.dept_id ?? <span class="s">''</span>);
+  headers.<span class="fn">set</span>(<span class="s">'x-current-accessible-depts'</span>,
+    JSON.<span class="fn">stringify</span>(access.accessible_dept_ids ?? []));
+  <span class="k">return</span> NextResponse.<span class="fn">next</span>(
+    { request: { headers } }
+  );
 });
+<span class="k">export const</span> config = { matcher: [
+  <span class="s">'/((?!_next/static|_next/image|favicon).*)'</span>
+]};</pre>
+          </div>
+        </div>
 
-<span class="kw">export const</span> config = {
-  matcher: [<span class="str">'/((?!_next/static|_next/image|favicon).*)' </span>]
-};</pre>
+        <div class="score-compare">
+          <div class="sc-row">
+            <span class="sc-lbl">Before</span>
+            <div class="sc-track"><div class="sc-bar" style="width:0%;background:var(--red)"></div></div>
+            <span class="sc-num c-red">0/10</span>
+          </div>
+          <div class="sc-row">
+            <span class="sc-lbl">After</span>
+            <div class="sc-track"><div class="sc-bar" style="width:100%;background:var(--green)"></div></div>
+            <span class="sc-num c-green">10/10</span>
+          </div>
         </div>
       </div>
-    </div>
+    </div><!-- /middleware -->
 
-    <div class="score-compare">
-      <span class="sc-label">Before</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:0%;background:var(--red)"></div></div>
-      <span class="sc-val" style="color:var(--red)">0/10</span>
-    </div>
-    <div class="score-compare">
-      <span class="sc-label">After</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div>
-      <span class="sc-val" style="color:var(--green)">9/10</span>
-    </div>
-    <div class="callout" style="margin-top:16px">
-      <strong>Sprint impact: +12 pts.</strong> This is the highest-leverage fix in the entire sprint. Every other security control (RLS, RBAC, Nango ownership checks) assumes that the caller has been authenticated — which never happens without middleware.
-    </div>
+    <!-- FILE: lib/auth/rbac.ts -->
+    <div class="file-review" id="f-rbac">
+      <div class="file-bar" onclick="ft('f-rbac')">
+        <span class="file-path">lib/auth/rbac.ts</span>
+        <span class="file-score-change">4 → 9</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-critical"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-critical">CRITICAL</span> Clerk role fallback allows privilege escalation</div>
+              <div class="issue-why">When no Supabase row exists for a user, the code falls back to the raw Clerk JWT role. An attacker who creates a Clerk org with <code>org:admin</code> before being provisioned in <code>org_members</code> gets full admin access. Fallback must return <code>role: null</code> (deny).</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Swallowed errors — DB failures are invisible in production</div>
+              <div class="issue-why">Both the Supabase catch and Redis set catch are empty. DB failures silently return wrong roles. At minimum, each must emit a structured warning with the error object.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-medium"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-medium">MEDIUM</span> Cache TTL 60s — too short for performance; spec says 300s</div>
+              <div class="issue-why">At 100 concurrent users: 100 DB queries/min just for RBAC. Spec requires 5-minute TTL with explicit cache invalidation on role change.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-low"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-low">LOW</span> <code>normalizeDeptIds</code> defined but never called — dead code</div>
+              <div class="issue-why">The function is defined but <code>accessible_dept_ids</code> is built from the grant query directly. Dead code should be removed. Also missing: cache invalidation helper needed by admin role-change endpoint.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="diff">
+          <div class="code-box">
+            <div class="code-label cl-before">✗ BEFORE — privilege escalation via fallback</div>
+            <pre><span class="c">// Clerk role fallback</span>
+<span class="k">if</span> (!result || !result.role) {
+  <span class="k">const</span> mappedRole = <span class="fn">mapRole</span>(clerkRole);
+  result = {
+    ...result,
+    <span class="del">role: mappedRole, // ← grants Clerk role
+    // even with no DB row!</span>
+  };
+}
+<span class="c">// TTL = 60s  (too short)</span>
+<span class="k">const</span> RBAC_CACHE_TTL = <span class="del">60</span>;</pre>
+          </div>
+          <div class="code-box">
+            <div class="code-label cl-after">✓ AFTER — deny-by-default + structured logging</div>
+            <pre><span class="c">// TTL = 300s  (matches spec)</span>
+<span class="k">const</span> RBAC_CACHE_TTL = <span class="add">300</span>;
+
+<span class="k">if</span> (!result || !result.role) {
+  console.<span class="fn">warn</span>(<span class="s">'[RBAC] No org_members row'</span>,
+    { userId, orgId });
+  result = {
+    internal_user_id: <span class="k">null</span>,
+    <span class="add">role: null,  // deny-by-default</span>
+    dept_id: <span class="k">null</span>,
+    accessible_dept_ids: <span class="k">null</span>,
+    bi_grant_id: <span class="k">null</span>,
+  };
+}
+<span class="c">// Cache invalidation exported</span>
+<span class="k">export async function</span> <span class="fn">invalidateRBACCache</span>(
+  userId: <span class="k">string</span>, orgId: <span class="k">string</span>
+) {
+  <span class="k">await</span> redis.<span class="fn">del</span>(<span class="fn">makeCacheKey</span>(userId, orgId));
+}</pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:40%;background:var(--red)"></div></div><span class="sc-num c-red">4/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div><span class="sc-num c-green">9/10</span></div>
+        </div>
+      </div>
+    </div><!-- /rbac -->
+
+    <!-- FILE: lib/auth/clerk.ts -->
+    <div class="file-review" id="f-clerk">
+      <div class="file-bar" onclick="ft('f-clerk')">
+        <span class="file-path">lib/auth/clerk.ts</span>
+        <span class="file-score-change">9 → 10</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-good"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-good">GOOD</span> Role mapping is clean and correct</div>
+              <div class="issue-why"><code>mapRole()</code> correctly maps Clerk's <code>org:admin</code>, <code>org:member</code>, <code>org:bi_analyst</code> to internal roles. Returns <code>null</code> for unknown roles. No issues here.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-low"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-low">LOW</span> No exported type for <code>ClerkOrgRole</code> — callers use raw strings</div>
+              <div class="issue-why">Exporting a <code>ClerkOrgRole</code> union type would let TypeScript catch invalid role strings at compile time instead of silently returning <code>null</code>.</div>
+            </div>
+          </div>
+        </div>
+        <div class="diff diff-1">
+          <div class="code-box">
+            <div class="code-label cl-after">✓ FIX — add ClerkOrgRole type</div>
+            <pre><span class="k">export type</span> ClerkOrgRole =
+  <span class="s">'org:admin'</span> | <span class="s">'org:member'</span> | <span class="s">'org:bi_analyst'</span>;
+
+<span class="k">export function</span> <span class="fn">mapRole</span>(
+  orgRole?: ClerkOrgRole | <span class="k">string</span>
+): <span class="s">'admin'</span> | <span class="s">'member'</span> | <span class="s">'super_user'</span> | <span class="k">null</span> {
+  <span class="c">// ...existing switch unchanged...</span>
+}</pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div><span class="sc-num c-green">9/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:100%;background:var(--green)"></div></div><span class="sc-num c-green">10/10</span></div>
+        </div>
+      </div>
+    </div><!-- /clerk.ts -->
+
   </div>
-</div>
+</div><!-- /ATH-23 -->
 
-<!-- ─── FILE 2: llm-factory.ts -->
-<div class="file-card" id="card-1">
-  <div class="file-header" onclick="toggle('card-1')">
-    <span class="file-rank">#2</span>
-    <span class="file-path">lib/langgraph/llm-factory.ts</span>
-    <span class="score-badge low">2 / 10 → 8 / 10</span>
-    <div class="impact-bar-wrap">
-      <span class="impact-label">+8pt</span>
-      <div class="impact-bar"><div class="impact-fill orange" style="width:67%"></div></div>
+<!-- ── ATH-21: LangGraph State + Graph + Checkpointer ──── -->
+<div class="task-block" id="t21">
+  <div class="task-head" onclick="tt('t21')">
+    <span class="task-id">ATH-21</span>
+    <span class="task-name">Architect LangGraph state type + graph skeleton + checkpointer</span>
+    <div class="task-score-pair">
+      <span class="score-pill sp-orange">Before 5/10</span>
+      <span style="color:var(--text3);font-size:12px;">→</span>
+      <span class="score-pill sp-green">After 9/10</span>
     </div>
-    <span class="chevron">▶</span>
+    <span class="arrow">▶</span>
   </div>
-  <div class="file-body">
-    <div class="issues-section">
-      <h4>Issues Found</h4>
-      <div class="issue-row">
-        <div class="severity-dot sev-critical"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag critical">CRITICAL</span> Singleton pattern ignores modelName/temperature arguments</div>
-          <div class="issue-why">The factory caches the first model instance ever created. Every subsequent call to <code>getModel('gpt-4o-mini', 0.7)</code> silently returns the original <code>gpt-4o</code> instance at <code>temperature=0</code>. The supervisor, retrieval agent, and cross-dept agent all share one model, making tier-based routing (Haiku/Sonnet/Opus) impossible.</div>
-        </div>
-      </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-critical"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag critical">CRITICAL</span> BYOK (Bring Your Own Key) not implemented</div>
-          <div class="issue-why">The architecture spec (ATH-21) requires reading encrypted org keys from <code>org_api_keys</code> and instantiating org-specific model clients. The current file ignores this entirely — every org's requests go through the same platform key, which is wrong for enterprise billing isolation and blocks BYOK as a feature.</div>
-        </div>
-      </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-high"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag high">HIGH</span> Only OpenAI supported — Anthropic SDK installed but unused</div>
-          <div class="issue-why"><code>@anthropic-ai/sdk</code>, <code>@google/generative-ai</code> are in package.json but <code>llm-factory.ts</code> only imports <code>ChatOpenAI</code>. The model selection matrix (Haiku→Sonnet→Opus) from the spec is completely absent. The architecture spec is explicit: supervisor defaults to Sonnet, not GPT-4o.</div>
-        </div>
-      </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-high"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag high">HIGH</span> No env var guard — crashes on missing OPENAI_API_KEY</div>
-          <div class="issue-why">If <code>OPENAI_API_KEY</code> is absent the app crashes on module load, not on first use. This breaks local dev without the key and gives a terrible error message.</div>
-        </div>
-      </div>
-    </div>
+  <div class="task-body">
 
-    <div class="issues-section mt-24">
-      <h4>Prioritised Fix Plan</h4>
-      <ul class="plan-list">
-        <li><span class="plan-num">P1</span> Replace single-instance singleton with a per-key registry (Map keyed on <code>model+temp</code>)</li>
-        <li><span class="plan-num">P2</span> Add <code>resolveModelClient(orgId, complexity)</code> that reads <code>org_api_keys</code> (via supabaseAdmin) and instantiates Anthropic / OpenAI / Gemini accordingly</li>
-        <li><span class="plan-num">P3</span> Implement model selection matrix: simple→haiku/gpt-4o-mini, medium→sonnet/gpt-4o, complex→opus/gpt-4o</li>
-        <li><span class="plan-num">P4</span> Guard env vars, throw actionable errors at call-time (not module load)</li>
-      </ul>
-    </div>
+    <!-- lib/langgraph/llm-factory.ts -->
+    <div class="file-review" id="f-llm">
+      <div class="file-bar" onclick="ft('f-llm')">
+        <span class="file-path">lib/langgraph/llm-factory.ts</span>
+        <span class="file-score-change">1 → 9</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-critical"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-critical">CRITICAL</span> Broken singleton — ignores all arguments after first call</div>
+              <div class="issue-why"><code>getModel('gpt-4o-mini', 0.7)</code> always returns the first-ever <code>gpt-4o</code> instance at <code>temperature=0</code>. The supervisor, retrieval agent and cross-dept agent silently share the same model. Tier-based routing is completely non-functional.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-critical"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-critical">CRITICAL</span> BYOK not implemented — ATH-21 spec requirement missed</div>
+              <div class="issue-why">The spec requires reading <code>org_api_keys</code>, decrypting, and instantiating org-specific model clients. Completely absent. Every org's requests go through the platform key — wrong for enterprise billing isolation.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Only OpenAI — Anthropic SDK installed but unused</div>
+              <div class="issue-why"><code>@anthropic-ai/sdk</code> is in package.json but llm-factory only creates <code>ChatOpenAI</code>. Spec says supervisor defaults to Sonnet, not GPT-4o. Model matrix (Haiku→Sonnet→Opus) missing entirely. Also: <code>@langchain/anthropic</code> not even in package.json!</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> No env guard — crashes on missing key at module load</div>
+              <div class="issue-why">Crash happens at module load time instead of call time, making the error message unactionable and breaking every test that imports the graph.</div>
+            </div>
+          </div>
+        </div>
 
-    <div class="before-after">
-      <div class="code-block">
-        <div class="code-block-label before">✗ BEFORE — broken singleton</div>
-        <pre><span class="kw">class</span> LLMFactory {
-  <span class="kw">private static</span> instance: ChatOpenAI | <span class="kw">null</span> = <span class="kw">null</span>;
+        <div class="diff">
+          <div class="code-box">
+            <div class="code-label cl-before">✗ BEFORE — broken singleton</div>
+            <pre><span class="k">class</span> LLMFactory {
+  <span class="k">private static</span> instance:
+    ChatOpenAI | <span class="k">null</span> = <span class="k">null</span>;
 
-  <span class="kw">static</span> <span class="fn">getModel</span>(
-    modelName = <span class="str">"gpt-4o"</span>,
-    temperature = <span class="num">0</span>
+  <span class="k">static</span> <span class="fn">getModel</span>(
+    modelName = <span class="s">"gpt-4o"</span>,
+    temperature = <span class="n">0</span>
   ) {
-    <span class="kw">if</span> (!<span class="kw">this</span>.instance) {
-      <span class="kw">this</span>.instance = <span class="kw">new</span> <span class="fn">ChatOpenAI</span>({
+    <span class="k">if</span> (!<span class="k">this</span>.instance) {
+      <span class="k">this</span>.instance = <span class="k">new</span> <span class="fn">ChatOpenAI</span>({
         modelName, temperature
       });
     }
-    <span class="cm">// BUG: always returns first
-    // instance regardless of args</span>
-    <span class="kw">return this</span>.instance;
+    <span class="c">// BUG: returns same instance
+    // ignoring all arguments!</span>
+    <span class="k">return this</span>.instance;
   }
 }</pre>
-      </div>
-      <div class="code-block">
-        <div class="code-block-label after">✓ AFTER — tier-aware multi-provider</div>
-        <pre><span class="kw">const</span> MODEL_MAP = {
-  simple:  { anthropic: <span class="str">'claude-haiku-4-5'</span> },
-  medium:  { anthropic: <span class="str">'claude-sonnet-4-6'</span> },
-  complex: { anthropic: <span class="str">'claude-opus-4-6'</span> },
+          </div>
+          <div class="code-box">
+            <div class="code-label cl-after">✓ AFTER — BYOK, tier-routing, multi-provider</div>
+            <pre><span class="k">const</span> MODELS = {
+  simple:  <span class="s">'claude-haiku-4-5-20251001'</span>,
+  medium:  <span class="s">'claude-sonnet-4-6'</span>,
+  complex: <span class="s">'claude-opus-4-6'</span>,
 };
 
-<span class="kw">export async function</span> <span class="fn">resolveModelClient</span>(
-  orgId: <span class="kw">string</span>,
-  tier: ModelTier = <span class="str">'medium'</span>
+<span class="k">export async function</span> <span class="fn">resolveModelClient</span>(
+  orgId: <span class="k">string</span>,
+  tier: ModelTier = <span class="s">'medium'</span>
 ) {
-  <span class="cm">// 1. Check org BYOK keys</span>
-  <span class="kw">const</span> { data } = <span class="kw">await</span> supabaseAdmin
-    .<span class="fn">from</span>(<span class="str">'org_api_keys'</span>)
-    .<span class="fn">select</span>(<span class="str">'provider,encrypted_key'</span>)
-    .<span class="fn">eq</span>(<span class="str">'org_id'</span>, orgId).<span class="fn">maybeSingle</span>();
+  <span class="k">const</span> cached = clientCache.<span class="fn">get</span>(
+    <span class="s">`${orgId}:${tier}`</span>);
+  <span class="k">if</span> (cached) <span class="k">return</span> cached;
 
-  <span class="kw">const</span> model = MODEL_MAP[tier].anthropic;
-  <span class="kw">const</span> apiKey = data
-    ? <span class="fn">decrypt</span>(data.encrypted_key)
-    : process.env.ANTHROPIC_API_KEY!;
+  <span class="c">// 1. Try BYOK from org_api_keys</span>
+  <span class="k">const</span> byok = <span class="k">await</span> <span class="fn">fetchOrgKey</span>(orgId);
 
-  <span class="kw">return new</span> <span class="fn">ChatAnthropic</span>({ model, apiKey });
+  <span class="c">// 2. Build Anthropic client</span>
+  <span class="k">const</span> client = <span class="k">new</span> <span class="fn">ChatAnthropic</span>({
+    model: MODELS[tier],
+    apiKey: byok ?? process.env
+      .ANTHROPIC_API_KEY!,
+  });
+  clientCache.<span class="fn">set</span>(<span class="s">`${orgId}:${tier}`</span>, client);
+  <span class="k">return</span> client;
 }</pre>
-      </div>
-    </div>
-
-    <div class="score-compare">
-      <span class="sc-label">Before</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:20%;background:var(--red)"></div></div>
-      <span class="sc-val" style="color:var(--red)">2/10</span>
-    </div>
-    <div class="score-compare">
-      <span class="sc-label">After</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:80%;background:var(--green)"></div></div>
-      <span class="sc-val" style="color:var(--green)">8/10</span>
-    </div>
-  </div>
-</div>
-
-<!-- ─── FILE 3: lib/auth/rbac.ts -->
-<div class="file-card" id="card-2">
-  <div class="file-header" onclick="toggle('card-2')">
-    <span class="file-rank">#3</span>
-    <span class="file-path">lib/auth/rbac.ts</span>
-    <span class="score-badge mid">5 / 10 → 9 / 10</span>
-    <div class="impact-bar-wrap">
-      <span class="impact-label">+6pt</span>
-      <div class="impact-bar"><div class="impact-fill orange" style="width:50%"></div></div>
-    </div>
-    <span class="chevron">▶</span>
-  </div>
-  <div class="file-body">
-    <div class="issues-section">
-      <h4>Issues Found</h4>
-      <div class="issue-row">
-        <div class="severity-dot sev-critical"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag critical">CRITICAL</span> Silent Clerk role fallback allows privilege escalation</div>
-          <div class="issue-why">When Supabase returns no user record (user not yet provisioned), the code falls back to the raw Clerk JWT role. An attacker who creates a Clerk account with <code>org:admin</code> role before being added to <code>org_members</code> gets admin-level access. The fallback should return <code>null</code> (deny) not the Clerk role.</div>
+          </div>
+        </div>
+        <div class="callout ca-warn">
+          <strong>Action required:</strong> Add <code>"@langchain/anthropic": "^0.3.x"</code> to package.json. The <code>ChatAnthropic</code> import requires this package, which is currently absent from dependencies.
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:10%;background:var(--red)"></div></div><span class="sc-num c-red">1/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div><span class="sc-num c-green">9/10</span></div>
         </div>
       </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-high"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag high">HIGH</span> Swallowed DB errors are invisible in production</div>
-          <div class="issue-why">Both the Supabase query catch block and the Redis set catch block are empty comments: <code>// Non-fatal</code>. DB failures silently return a null role. Structured logging should at minimum emit a warning with the error object so on-call engineers can triage access failures.</div>
-        </div>
-      </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-medium"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag medium">MEDIUM</span> Cache TTL is 60s — too short for performance, right for security</div>
-          <div class="issue-why">60 seconds means 1 Supabase query per minute per active user. At 100 concurrent users this is 100 DB calls/min just for RBAC. Consider 5 minutes with an explicit invalidation on role change (per the spec which says 5 min TTL).</div>
-        </div>
-      </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-low"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag low">LOW</span> <code>normalizeDeptIds</code> defined but never called</div>
-          <div class="issue-why">Dead code. The function exists but <code>accessible_dept_ids</code> is built directly from the grant query instead. Remove or actually call it for consistency.</div>
-        </div>
-      </div>
-    </div>
+    </div><!-- /llm-factory -->
 
-    <div class="issues-section mt-24">
-      <h4>Prioritised Fix Plan</h4>
-      <ul class="plan-list">
-        <li><span class="plan-num">P1</span> Remove Clerk role fallback entirely — if no Supabase record exists, return <code>role: null</code> and let callers deny access</li>
-        <li><span class="plan-num">P2</span> Add structured logging on all catch blocks (even a single <code>console.warn</code> with the error)</li>
-        <li><span class="plan-num">P3</span> Increase cache TTL to 300s and add a cache invalidation helper called on role change</li>
-        <li><span class="plan-num">P4</span> Remove dead <code>normalizeDeptIds</code></li>
-      </ul>
-    </div>
-
-    <div class="before-after">
-      <div class="code-block">
-        <div class="code-block-label before">✗ BEFORE — escalation via fallback</div>
-        <pre><span class="cm">// 2. Fallback to Clerk role</span>
-<span class="kw">if</span> (!result || !result.role) {
-  <span class="kw">const</span> mappedRole = <span class="fn">mapRole</span>(clerkRole);
-  result = {
-    ...result,
-    <span class="del">role: mappedRole,  // ← grants Clerk role</span>
-                      <span class="cm">// even w/o DB record</span>
-  };
-}</pre>
+    <!-- lib/langgraph/graph.ts -->
+    <div class="file-review" id="f-graph">
+      <div class="file-bar" onclick="ft('f-graph')">
+        <span class="file-path">lib/langgraph/graph.ts</span>
+        <span class="file-score-change">6 → 9</span>
+        <span class="f-arrow">▶</span>
       </div>
-      <div class="code-block">
-        <div class="code-block-label after">✓ AFTER — deny-by-default</div>
-        <pre><span class="cm">// 2. No DB record = deny</span>
-<span class="kw">if</span> (!result || !result.role) {
-  console.<span class="fn">warn</span>(<span class="str">`[RBAC] No org_members row`
-  + ` for ${userId} in ${orgId}`</span>);
-  <span class="kw">return</span> {
-    internal_user_id: <span class="kw">null</span>,
-    <span class="add">role: null,  // ← caller must deny</span>
-    dept_id: <span class="kw">null</span>,
-    accessible_dept_ids: <span class="kw">null</span>,
-    bi_grant_id: <span class="kw">null</span>,
-  };
-}</pre>
-      </div>
-    </div>
-
-    <div class="score-compare">
-      <span class="sc-label">Before</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:50%;background:var(--orange)"></div></div>
-      <span class="sc-val" style="color:var(--orange)">5/10</span>
-    </div>
-    <div class="score-compare">
-      <span class="sc-label">After</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div>
-      <span class="sc-val" style="color:var(--green)">9/10</span>
-    </div>
-  </div>
-</div>
-
-<!-- ─── FILE 4: app/api/agent/route.ts -->
-<div class="file-card" id="card-3">
-  <div class="file-header" onclick="toggle('card-3')">
-    <span class="file-rank">#4</span>
-    <span class="file-path">app/api/agent/route.ts</span>
-    <span class="score-badge mid">5 / 10 → 8 / 10</span>
-    <div class="impact-bar-wrap">
-      <span class="impact-label">+5pt</span>
-      <div class="impact-bar"><div class="impact-fill orange" style="width:42%"></div></div>
-    </div>
-    <span class="chevron">▶</span>
-  </div>
-  <div class="file-body">
-    <div class="issues-section">
-      <h4>Issues Found</h4>
-      <div class="issue-row">
-        <div class="severity-dot sev-critical"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag critical">CRITICAL</span> No input validation — <code>message</code> is passed raw to the LLM</div>
-          <div class="issue-why"><code>const { message, threadId } = await req.json()</code> with zero validation. If <code>message</code> is undefined, <code>new HumanMessage(undefined)</code> throws an opaque error. If it's 10 MB of text, it burns tokens and may crash the process. At minimum: require non-empty string, enforce max length.</div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Synthesis agent node missing from the graph</div>
+              <div class="issue-why">The graph routes retrieval → supervisor → END but there is no synthesis step. Retrieved chunks accumulate in state but are never summarized or cited. Users get raw supervisor "FINISH" output instead of a synthesized answer.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> <code>compiledGraph</code> typed as <code>any</code> — no type safety</div>
+              <div class="issue-why">The cached compiled graph is typed as <code>any</code>. Callers can call any method on it without TypeScript catching errors. Should be <code>CompiledStateGraph&lt;AtheneStateType&gt;</code>.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-medium"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-medium">MEDIUM</span> No approval gate in graph topology — HITL interrupt_before not wired</div>
+              <div class="issue-why">The approval endpoint (<code>app/api/threads/[id]/approve/route.ts</code>) is fully implemented but the graph has no <code>interrupt_before</code> gate and no approval node. The HITL flow is unreachable via the graph.</div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-high"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag high">HIGH</span> Error message from internal system leaked to client in 500 response</div>
-          <div class="issue-why"><code>return new NextResponse(msg, { status: 500 })</code> where <code>msg</code> is the raw <code>Error.message</code> from the LangGraph graph. Internal stack traces, model names, and Supabase connection strings can appear in the response body.</div>
-        </div>
-      </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-high"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag high">HIGH</span> Thread ownership not verified before resuming graph state</div>
-          <div class="issue-why">Any authenticated user can pass any <code>threadId</code> and read another user's graph state. The status route does verify ownership, but the main agent route does not — it just calls <code>graph.stream(initialState)</code> with the user-supplied ID.</div>
-        </div>
-      </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-medium"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag medium">MEDIUM</span> Rate limiting absent</div>
-          <div class="issue-why">A single user can spam the agent endpoint. Each request spins up a LangGraph stream and makes Anthropic API calls. Without rate limiting, one bad actor can run up the platform's LLM bill or DoS the service.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="issues-section mt-24">
-      <h4>Prioritised Fix Plan</h4>
-      <ul class="plan-list">
-        <li><span class="plan-num">P1</span> Validate body with Zod: <code>message</code> must be a non-empty string ≤ 4000 chars, <code>threadId</code> optional UUID</li>
-        <li><span class="plan-num">P2</span> Return <code>"Internal Server Error"</code> literal for 500s, log the real error server-side only</li>
-        <li><span class="plan-num">P3</span> If <code>threadId</code> is provided, verify it belongs to <code>userId</code>/<code>orgId</code> before streaming</li>
-        <li><span class="plan-num">P4</span> Add Redis-based rate limit: e.g. 20 requests/user/minute using <code>incrWithExpire</code></li>
-      </ul>
-    </div>
-
-    <div class="before-after">
-      <div class="code-block">
-        <div class="code-block-label before">✗ BEFORE — unvalidated input</div>
-        <pre><span class="kw">const</span> { message, threadId } =
-  <span class="kw">await</span> req.<span class="fn">json</span>();
-<span class="cm">// no validation at all</span>
-
-<span class="kw">const</span> initialState = {
-  messages: [<span class="kw">new</span> <span class="fn">HumanMessage</span>(<span class="del">message</span>)],
-  orgId, userId, role,
+        <div class="diff">
+          <div class="code-box">
+            <div class="code-label cl-before">✗ BEFORE — no synthesis, no HITL gate</div>
+            <pre>workflow.<span class="fn">addEdge</span>(<span class="s">"retrieval"</span>, <span class="s">"supervisor"</span>);
+workflow.<span class="fn">addEdge</span>(<span class="s">"cross_dept_retrieval"</span>,
+  <span class="s">"supervisor"</span>);
+<span class="c">// supervisor goes straight to END
+// no synthesis, no approval node</span>
+<span class="k">const</span> edges = {
+  <span class="del">FINISH: END,</span>
 };</pre>
+          </div>
+          <div class="code-box">
+            <div class="code-label cl-after">✓ AFTER — synthesis + approval gate</div>
+            <pre"><span class="fn">.addNode</span>(<span class="s">"synthesis"</span>, synthesisAgentNode)
+<span class="fn">.addNode</span>(<span class="s">"approval_gate"</span>, approvalNode);
+
+<span class="c">// retrieval → supervisor → synthesis</span>
+workflow.<span class="fn">addEdge</span>(<span class="s">"retrieval"</span>, <span class="s">"supervisor"</span>);
+workflow.<span class="fn">addEdge</span>(<span class="s">"supervisor"</span>, <span class="s">"synthesis"</span>);
+workflow.<span class="fn">addEdge</span>(<span class="s">"synthesis"</span>, <span class="s">"approval_gate"</span>);
+
+compiledGraph = workflow.<span class="fn">compile</span>({
+  checkpointer,
+  <span class="add">interruptBefore: ['approval_gate'],</span>
+});</pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:60%;background:var(--orange)"></div></div><span class="sc-num c-orange">6/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div><span class="sc-num c-green">9/10</span></div>
+        </div>
       </div>
-      <div class="code-block">
-        <div class="code-block-label after">✓ AFTER — validated + safe errors</div>
-        <pre><span class="kw">const</span> schema = z.<span class="fn">object</span>({
-  message: z.<span class="fn">string</span>().<span class="fn">min</span>(<span class="num">1</span>).<span class="fn">max</span>(<span class="num">4000</span>),
+    </div><!-- /graph.ts -->
+
+    <!-- lib/langgraph/checkpointer.ts -->
+    <div class="file-review" id="f-chk">
+      <div class="file-bar" onclick="ft('f-chk')">
+        <span class="file-path">lib/langgraph/checkpointer.ts</span>
+        <span class="file-score-change">8 → 10</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-good"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-good">GOOD</span> Correct approach — lazy singleton PostgresSaver with setup()</div>
+              <div class="issue-why">The lazy init pattern prevents blocking at module load. Calling <code>setup()</code> ensures checkpoint tables exist before first use. Good error message on missing env var.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-medium"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-medium">MEDIUM</span> No connection pool config — defaults may exhaust DB connections</div>
+              <div class="issue-why">Under load, multiple concurrent graph streams will each grab a connection from the default pool. PostgresSaver should be initialized with a pool size config matching your Supabase tier limits.</div>
+            </div>
+          </div>
+        </div>
+        <div class="diff diff-1">
+          <div class="code-box">
+            <div class="code-label cl-after">✓ FIX — add pool config</div>
+            <pre><span class="k">const</span> saver = PostgresSaver.<span class="fn">fromConnString</span>(
+  connectionString,
+  <span class="add">{ max: 5 } // cap pool size per worker process</span>
+);
+<span class="k">await</span> saver.<span class="fn">setup</span>();</pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:80%;background:var(--green)"></div></div><span class="sc-num c-green">8/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:100%;background:var(--green)"></div></div><span class="sc-num c-green">10/10</span></div>
+        </div>
+      </div>
+    </div><!-- /checkpointer -->
+
+  </div>
+</div><!-- /ATH-21 -->
+
+<!-- ── ATH-20: Supabase schema + RLS ────────────────────── -->
+<div class="task-block" id="t20">
+  <div class="task-head" onclick="tt('t20')">
+    <span class="task-id">ATH-20</span>
+    <span class="task-name">Design &amp; implement complete Supabase schema + RLS policies</span>
+    <div class="task-score-pair">
+      <span class="score-pill sp-orange">Before 6/10</span>
+      <span style="color:var(--text3);font-size:12px;">→</span>
+      <span class="score-pill sp-green">After 9/10</span>
+    </div>
+    <span class="arrow">▶</span>
+  </div>
+  <div class="task-body">
+
+    <div class="file-review" id="f-server">
+      <div class="file-bar" onclick="ft('f-server')">
+        <span class="file-path">lib/supabase/server.ts</span>
+        <span class="file-score-change">6 → 9</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Three aliases for admin client — <code>supabase</code> misleads developers</div>
+              <div class="issue-why"><code>supabaseAdmin</code>, <code>supabaseServer</code>, <code>supabase</code> all point to the service-role client that bypasses RLS. A developer importing <code>supabase</code> (sounds like the regular client) will unknowingly skip RLS on every query. Already happened in <code>lib/nango/client.ts</code>.</div>
+            </div>
+          </div>
+        </div>
+        <div class="diff">
+          <div class="code-box">
+            <div class="code-label cl-before">✗ BEFORE — confusing aliases</div>
+            <pre"><span class="k">export const</span> supabaseAdmin = <span class="fn">createClient</span>(...)
+<span class="del">export const supabaseServer = supabaseAdmin;</span>
+<span class="del">export const supabase = supabaseAdmin;</span>
+<span class="c">// ↑ developers think 'supabase' is
+// the user-scoped client. It's not.</span></pre>
+          </div>
+          <div class="code-box">
+            <div class="code-label cl-after">✓ AFTER — one export, clear JSDoc</div>
+            <pre"><span class="c">/**
+ * Service-role client — bypasses ALL RLS.
+ * Use withRLS() for user-scoped queries.
+ * @see lib/supabase/rls-client.ts
+ */</span>
+<span class="k">export const</span> supabaseAdmin = <span class="fn">createClient</span>(...);
+<span class="c">// supabaseServer and supabase removed.
+// Fix nango/client.ts import (below).</span></pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:60%;background:var(--orange)"></div></div><span class="sc-num c-orange">6/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div><span class="sc-num c-green">9/10</span></div>
+        </div>
+      </div>
+    </div><!-- /server.ts -->
+
+    <div class="file-review" id="f-rls">
+      <div class="file-bar" onclick="ft('f-rls')">
+        <span class="file-path">lib/supabase/rls-client.ts</span>
+        <span class="file-score-change">9 → 10</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-good"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-good">GOOD</span> Dual enforcement is excellent — belt-and-suspenders approach</div>
+              <div class="issue-why">Both HTTP headers (PostgREST path) and <code>SET LOCAL via set_app_context()</code> RPC (direct Postgres path) are set. This is exactly the right pattern for a multi-tenant B2B app. The super_user grant injection via temp table is well thought through.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-medium"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-medium">MEDIUM</span> <code>set_app_context</code> error swallowed — silently continues with wrong context</div>
+              <div class="issue-why">If the RPC fails (e.g. function doesn't exist in migration), the code logs the error and continues. But the session variables won't be set, meaning the direct Postgres path will use wrong identity. Should be a hard failure in production.</div>
+            </div>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div><span class="sc-num c-green">9/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:100%;background:var(--green)"></div></div><span class="sc-num c-green">10/10</span></div>
+        </div>
+      </div>
+    </div><!-- /rls-client -->
+
+  </div>
+</div><!-- /ATH-20 -->
+
+<!-- ── ATH-24: Supabase client utilities ─────────────────── -->
+<div class="task-block" id="t24">
+  <div class="task-head" onclick="tt('t24')">
+    <span class="task-id">ATH-24</span>
+    <span class="task-name">Set up Supabase client utilities (service role + RLS client)</span>
+    <div class="task-score-pair">
+      <span class="score-pill sp-orange">Before 7/10</span>
+      <span style="color:var(--text3);font-size:12px;">→</span>
+      <span class="score-pill sp-green">After 10/10</span>
+    </div>
+    <span class="arrow">▶</span>
+  </div>
+  <div class="task-body">
+
+    <div class="file-review" id="f-vec">
+      <div class="file-bar" onclick="ft('f-vec')">
+        <span class="file-path">lib/supabase/vector.ts + lib/supabase/audit.ts</span>
+        <span class="file-score-change">8 → 10</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-good"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-good">GOOD</span> vector.ts correctly routes through withRLS()</div>
+              <div class="issue-why"><code>similaritySearch()</code> wraps the Postgres RPC call in <code>withRLS()</code> so every vector query respects the user's dept boundaries. Clean, correct pattern.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-medium"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-medium">MEDIUM</span> audit.ts uses <code>any</code> type for <code>details</code> field</div>
+              <div class="issue-why">The <code>details</code> field in <code>AuditLogEntry</code> is typed as <code>any</code>. Since audit logs are compliance records, the shape should be <code>Record&lt;string, unknown&gt;</code> to prevent accidental serialization of sensitive objects.</div>
+            </div>
+          </div>
+        </div>
+        <div class="diff diff-1">
+          <div class="code-box">
+            <div class="code-label cl-after">✓ FIX — typed audit entry</div>
+            <pre><span class="k">export type</span> AuditLogEntry = {
+  org_id: <span class="k">string</span>;
+  admin_user_id: <span class="k">string</span>;
+  action: <span class="k">string</span>;
+  target_user_id?: <span class="k">string</span>;
+  <span class="add">details?: Record&lt;string, unknown&gt;;</span>
+  <span class="del">details?: any; // ← was any</span>
+};</pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:80%;background:var(--green)"></div></div><span class="sc-num c-green">8/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:100%;background:var(--green)"></div></div><span class="sc-num c-green">10/10</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /ATH-24 -->
+
+<!-- ── ATH-27: Nango client ──────────────────────────────── -->
+<div class="task-block" id="t27">
+  <div class="task-head" onclick="tt('t27')">
+    <span class="task-id">ATH-27</span>
+    <span class="task-name">Set up Nango client + connection model</span>
+    <div class="task-score-pair">
+      <span class="score-pill sp-orange">Before 6/10</span>
+      <span style="color:var(--text3);font-size:12px;">→</span>
+      <span class="score-pill sp-green">After 9/10</span>
+    </div>
+    <span class="arrow">▶</span>
+  </div>
+  <div class="task-body">
+
+    <div class="file-review" id="f-nango">
+      <div class="file-bar" onclick="ft('f-nango')">
+        <span class="file-path">lib/nango/client.ts</span>
+        <span class="file-score-change">6 → 9</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Imports <code>supabase</code> alias instead of <code>supabaseAdmin</code></div>
+              <div class="issue-why">Line 2: <code>import { supabase } from '../supabase/server'</code>. After removing the misleading alias (ATH-20 fix), this will break. Even before the fix, using <code>supabase</code> is a code smell — intent should be explicit: this is the service-role bypass client.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> <code>listConnections</code> has a dangerous Nango fallback path</div>
+              <div class="issue-why">When no Supabase mappings found, the code falls back to <code>nango.listConnections()</code> filtered by <code>metadata.org_id</code>. Nango metadata is user-controlled during OAuth setup — it cannot be trusted as an ownership proof. This path should be removed, not just documented.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-medium"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-medium">MEDIUM</span> <code>getConnectionToken</code> alias via duck-patching</div>
+              <div class="issue-why">Patching <code>(nangoInstance as any).getConnectionToken</code> at runtime is fragile. If the Nango SDK adds a native method with that name, behavior changes silently. Create a proper wrapper function instead.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-good"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-good">GOOD</span> Ownership verification before every token fetch is exactly right</div>
+              <div class="issue-why">Every sensitive method (<code>getConnectionToken</code>, <code>getConnectionMetadata</code>, <code>deleteConnection</code>) verifies org ownership in Supabase before calling Nango. Fail-closed on missing Supabase record. This is the correct pattern.</div>
+            </div>
+          </div>
+        </div>
+        <div class="diff">
+          <div class="code-box">
+            <div class="code-label cl-before">✗ BEFORE — wrong import + fallback</div>
+            <pre"><span class="del">import { supabase } from '../supabase/server'</span>
+
+<span class="c">// Dangerous metadata fallback:</span>
+<span class="k">const</span> { connections } =
+  <span class="k">await</span> nango.<span class="fn">listConnections</span>(
+    undefined, undefined,
+    { endUserOrganizationId: orgId }
+  );
+<span class="c">// Filter by user-controlled metadata:</span>
+<span class="del">conn.metadata?.org_id === orgId</span>
+<span class="c">// ↑ NOT safe as ownership proof</span></pre>
+          </div>
+          <div class="code-box">
+            <div class="code-label cl-after">✓ AFTER — correct import + no fallback</div>
+            <pre"><span class="add">import { supabaseAdmin } from '../supabase/server'</span>
+
+<span class="k">export async function</span> <span class="fn">listConnections</span>(orgId: <span class="k">string</span>) {
+  <span class="k">const</span> { data: mappings } = <span class="k">await</span> supabaseAdmin
+    .<span class="fn">from</span>(<span class="s">'nango_connections'</span>)
+    .<span class="fn">select</span>(<span class="s">'connection_id, provider_config_key'</span>)
+    .<span class="fn">eq</span>(<span class="s">'org_id'</span>, orgId);
+
+  <span class="add">// No Nango fallback — if no Supabase
+  // row exists, connection doesn't exist</span>
+  <span class="k">if</span> (!mappings?.length) <span class="k">return</span> [];
+
+  <span class="c">// Fetch only verified connections</span>
+  <span class="k">return</span> Promise.<span class="fn">all</span>(mappings.<span class="fn">map</span>(m =>
+    nango.<span class="fn">getConnection</span>(
+      m.provider_config_key, m.connection_id
+    ).<span class="fn">catch</span>(() => <span class="k">null</span>)
+  )).<span class="fn">then</span>(cs => cs.<span class="fn">filter</span>(Boolean));
+}</pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:60%;background:var(--orange)"></div></div><span class="sc-num c-orange">6/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div><span class="sc-num c-green">9/10</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- nango/session route -->
+    <div class="file-review" id="f-nsess">
+      <div class="file-bar" onclick="ft('f-nsess')">
+        <span class="file-path">app/api/nango/session/route.ts</span>
+        <span class="file-score-change">5 → 9</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Nango SDK call has no try/catch — unhandled exception crashes the route</div>
+              <div class="issue-why">If <code>nango.createConnectSession()</code> throws (network error, invalid key, rate limit), the route crashes with an unhandled exception and returns a 500 with a raw stack trace to the client.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Empty-string fallback on <code>NANGO_SECRET_KEY</code></div>
+              <div class="issue-why"><code>process.env.NANGO_SECRET_KEY || ""</code> — an empty string initialises the Nango client with no authentication. Sessions created with an empty key may silently succeed in local dev but will fail in production with confusing errors.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-medium"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-medium">MEDIUM</span> Creates a new <code>Nango</code> instance on every request — should use singleton</div>
+              <div class="issue-why">The route imports and creates <code>new Nango()</code> directly instead of using the singleton from <code>lib/nango/client.ts</code>. Two different Nango clients means two connection pools and inconsistent error handling.</div>
+            </div>
+          </div>
+        </div>
+        <div class="diff">
+          <div class="code-box">
+            <div class="code-label cl-before">✗ BEFORE — no error handling</div>
+            <pre"><span class="k">const</span> nango = <span class="k">new</span> <span class="fn">Nango</span>({
+  secretKey: process.env.NANGO_SECRET_KEY
+    <span class="del">|| ""</span>  <span class="c">// ← empty string accepted</span>
+});
+<span class="c">// No try/catch:</span>
+<span class="del">const { data } = await nango
+  .createConnectSession({...});</span>
+<span class="k">return</span> NextResponse.<span class="fn">json</span>(
+  { token: data.token });
+<span class="c">// ↑ crashes if data is undefined</span></pre>
+          </div>
+          <div class="code-box">
+            <div class="code-label cl-after">✓ AFTER — guarded + singleton</div>
+            <pre"><span class="k">import</span> { getNangoClient }
+  <span class="k">from</span> <span class="s">'@/lib/nango/client'</span>;
+
+<span class="k">export async function</span> <span class="fn">POST</span>() {
+  <span class="k">const</span> { userId, orgId } = <span class="k">await</span> <span class="fn">auth</span>();
+  <span class="k">if</span> (!userId || !orgId)
+    <span class="k">return</span> NextResponse.<span class="fn">json</span>(
+      { error: <span class="s">'Unauthorized'</span> }, {status:<span class="n">401</span>});
+  <span class="k">try</span> {
+    <span class="k">const</span> nango = <span class="fn">getNangoClient</span>();
+    <span class="k">const</span> { data } = <span class="k">await</span>
+      nango.<span class="fn">createConnectSession</span>({
+        end_user: { id: userId },
+        organization: { id: orgId },
+      });
+    <span class="k">return</span> NextResponse.<span class="fn">json</span>(
+      { token: data.token });
+  } <span class="k">catch</span> (err) {
+    console.<span class="fn">error</span>(<span class="s">'[nango/session]'</span>, err);
+    <span class="k">return</span> NextResponse.<span class="fn">json</span>(
+      { error: <span class="s">'Failed to create session'</span> },
+      { status: <span class="n">500</span> });
+  }
+}</pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:50%;background:var(--orange)"></div></div><span class="sc-num c-orange">5/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div><span class="sc-num c-green">9/10</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /ATH-27 -->
+
+<!-- ── ATH-25: Redis + QStash ──────────────────────────── -->
+<div class="task-block" id="t25">
+  <div class="task-head" onclick="tt('t25')">
+    <span class="task-id">ATH-25</span>
+    <span class="task-name">Set up Upstash Redis + QStash clients</span>
+    <div class="task-score-pair">
+      <span class="score-pill sp-orange">Before 6/10</span>
+      <span style="color:var(--text3);font-size:12px;">→</span>
+      <span class="score-pill sp-green">After 10/10</span>
+    </div>
+    <span class="arrow">▶</span>
+  </div>
+  <div class="task-body">
+
+    <div class="file-review" id="f-qverify">
+      <div class="file-bar" onclick="ft('f-qverify')">
+        <span class="file-path">lib/qstash/verify.ts</span>
+        <span class="file-score-change">5 → 10</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Missing <code>url</code> param in <code>receiver.verify()</code> — replay attacks possible</div>
+              <div class="issue-why">QStash signs the destination URL into the HMAC. Without passing <code>url: req.url</code>, a valid signed payload from <code>/api/worker/nango-fetch</code> can be replayed against <code>/api/worker/graph-build</code>. The <code>url</code> field is mandatory for full protection.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Empty-string signing keys — silent failure if env vars missing</div>
+              <div class="issue-why"><code>|| ''</code> fallback means the receiver is initialised with empty keys in production misconfigurations. Should throw at module load if either key is absent.</div>
+            </div>
+          </div>
+        </div>
+        <div class="diff">
+          <div class="code-box">
+            <div class="code-label cl-before">✗ BEFORE — url missing, empty keys</div>
+            <pre"><span class="k">export const</span> receiver = <span class="k">new</span> <span class="fn">Receiver</span>({
+  currentSigningKey:
+    process.env.QSTASH_CURRENT_SIGNING_KEY
+    <span class="del">|| '',  // ← empty = silent failure</span>
+  nextSigningKey: ...<span class="del">|| '',</span>
+});
+
+<span class="k">const</span> isValid = <span class="k">await</span> receiver.<span class="fn">verify</span>({
+  signature,
+  body,
+  <span class="del">// url: missing — replay possible</span>
+});</pre>
+          </div>
+          <div class="code-box">
+            <div class="code-label cl-after">✓ AFTER — guarded keys + url included</div>
+            <pre"><span class="k">const</span> csk = process.env
+  .QSTASH_CURRENT_SIGNING_KEY;
+<span class="k">const</span> nsk = process.env
+  .QSTASH_NEXT_SIGNING_KEY;
+<span class="k">if</span> (!csk || !nsk) <span class="k">throw new</span> <span class="fn">Error</span>(
+  <span class="s">'QStash signing keys missing'</span>);
+
+<span class="k">export const</span> receiver = <span class="k">new</span> <span class="fn">Receiver</span>({
+  currentSigningKey: csk,
+  nextSigningKey: nsk,
+});
+
+<span class="k">const</span> isValid = <span class="k">await</span> receiver.<span class="fn">verify</span>({
+  signature, body,
+  <span class="add">url: req.url, // prevents replay attacks</span>
+});</pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:50%;background:var(--orange)"></div></div><span class="sc-num c-orange">5/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:100%;background:var(--green)"></div></div><span class="sc-num c-green">10/10</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="file-review" id="f-qclient">
+      <div class="file-bar" onclick="ft('f-qclient')">
+        <span class="file-path">lib/qstash/client.ts</span>
+        <span class="file-score-change">7 → 10</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Duplicate Supabase client instantiated with hardcoded dummy URL</div>
+              <div class="issue-why">Line 4: <code>createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://local-dummy.supabase.co', ...)</code>. Creates a second connection pool, misses the singleton, and the dummy URL will silently fail all DB operations in production when the env var is missing.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-good"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-good">GOOD</span> Atomic double-claim prevention in releaseSlot() is excellent</div>
+              <div class="issue-why">The <code>.eq('status', 'waiting')</code> guard on the UPDATE prevents two concurrent workers from both claiming the same pending job. This is production-grade concurrency control.</div>
+            </div>
+          </div>
+        </div>
+        <div class="diff">
+          <div class="code-box">
+            <div class="code-label cl-before">✗ BEFORE — duplicate client + dummy URL</div>
+            <pre"><span class="del">const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    'https://local-dummy.supabase.co',
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    'dummy'
+);</span>
+<span class="c">// ↑ creates 2nd pool + wrong fallback</span></pre>
+          </div>
+          <div class="code-box">
+            <div class="code-label cl-after">✓ AFTER — use shared singleton</div>
+            <pre"><span class="add">import { supabaseAdmin } from
+  '@/lib/supabase/server';</span>
+
+<span class="c">// Remove the createClient() call.
+// Use supabaseAdmin throughout.
+// One client, one pool, correct auth.</span>
+
+<span class="c">// dispatchThrottled and releaseSlot
+// replace 'supabase' with 'supabaseAdmin'</span></pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:70%;background:var(--orange)"></div></div><span class="sc-num c-orange">7/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:100%;background:var(--green)"></div></div><span class="sc-num c-green">10/10</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="file-review" id="f-redis">
+      <div class="file-bar" onclick="ft('f-redis')">
+        <span class="file-path">lib/redis/client.ts</span>
+        <span class="file-score-change">9 → 10</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-good"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-good">GOOD</span> Graceful stub + fail-closed incrWithExpire — correct pattern</div>
+              <div class="issue-why">The no-op stub prevents crashes in local dev. <code>incrWithExpire()</code> returning <code>null</code> on failure makes callers abort rather than over-dispatch. This is the right design.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-low"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-low">LOW</span> Missing <code>rateLimit()</code> helper — agent route needs it</div>
+              <div class="issue-why">The <code>incrWithExpire</code> primitive exists but there's no higher-level <code>rateLimit(key, limit, window)</code> helper that returns <code>{ allowed, remaining }</code>. Should be co-located here for the agent route to use.</div>
+            </div>
+          </div>
+        </div>
+        <div class="diff diff-1">
+          <div class="code-box">
+            <div class="code-label cl-after">✓ ADD — rateLimit() helper</div>
+            <pre"><span class="k">export async function</span> <span class="fn">rateLimit</span>(
+  key: <span class="k">string</span>,
+  limit: <span class="k">number</span>,
+  windowSec: <span class="k">number</span>
+): Promise&lt;{ allowed: <span class="k">boolean</span>; remaining: <span class="k">number</span> }&gt; {
+  <span class="k">const</span> count = <span class="k">await</span>
+    <span class="fn">incrWithExpire</span>(key, windowSec);
+  <span class="k">if</span> (count === <span class="k">null</span>)
+    <span class="k">return</span> { allowed: <span class="k">true</span>, remaining: limit };
+  <span class="k">return</span> {
+    allowed: count <= limit,
+    remaining: Math.<span class="fn">max</span>(<span class="n">0</span>, limit - count),
+  };
+}</pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div><span class="sc-num c-green">9/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:100%;background:var(--green)"></div></div><span class="sc-num c-green">10/10</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /ATH-25 -->
+
+<!-- ── ATH-22: Next.js scaffold ──────────────────────────── -->
+<div class="task-block" id="t22">
+  <div class="task-head" onclick="tt('t22')">
+    <span class="task-id">ATH-22</span>
+    <span class="task-name">Scaffold Next.js 14 App Router project with folder structure</span>
+    <div class="task-score-pair">
+      <span class="score-pill sp-orange">Before 5/10</span>
+      <span style="color:var(--text3);font-size:12px;">→</span>
+      <span class="score-pill sp-green">After 9/10</span>
+    </div>
+    <span class="arrow">▶</span>
+  </div>
+  <div class="task-body">
+
+    <div class="file-review" id="f-agentroute">
+      <div class="file-bar" onclick="ft('f-agentroute')">
+        <span class="file-path">app/api/agent/route.ts</span>
+        <span class="file-score-change">4 → 9</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> No input validation — <code>message</code> passed raw to LLM</div>
+              <div class="issue-why"><code>const { message, threadId } = await req.json()</code> with zero validation. If <code>message</code> is undefined → crash. If it's 10 MB → token burn and OOM. If <code>threadId</code> is a random string → wrong thread loaded.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Internal error details leaked in 500 response</div>
+              <div class="issue-why"><code>return new NextResponse(msg, { status: 500 })</code> where <code>msg</code> is the raw <code>Error.message</code>. Supabase connection strings, model names, internal paths can appear in the client response.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> No rate limiting — single user can exhaust LLM budget</div>
+              <div class="issue-why">No throttle on the agent endpoint. Each request starts a full LangGraph stream + Anthropic API calls. 100 requests in 10 seconds from one user = potential $$$  bill and DoS for other users.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Thread ownership not verified before loading state</div>
+              <div class="issue-why">Any authenticated user can pass any <code>threadId</code> and read another user's graph state. The status route verifies ownership — the main agent route does not.</div>
+            </div>
+          </div>
+        </div>
+        <div class="diff">
+          <div class="code-box">
+            <div class="code-label cl-before">✗ BEFORE — raw input, leaked errors</div>
+            <pre"><span class="del">const { message, threadId } =
+  await req.json(); // no validation</span>
+
+<span class="del">return new NextResponse(msg, {
+  status: 500
+}); // msg = raw Error.message!</span></pre>
+          </div>
+          <div class="code-box">
+            <div class="code-label cl-after">✓ AFTER — Zod + rate limit + safe 500</div>
+            <pre"><span class="k">const</span> schema = z.<span class="fn">object</span>({
+  message: z.<span class="fn">string</span>().<span class="fn">min</span>(<span class="n">1</span>).<span class="fn">max</span>(<span class="n">4000</span>),
   threadId: z.<span class="fn">string</span>().<span class="fn">uuid</span>().<span class="fn">optional</span>(),
 });
-<span class="kw">const</span> parsed = schema.<span class="fn">safeParse</span>(
-  <span class="kw">await</span> req.<span class="fn">json</span>()
-);
-<span class="kw">if</span> (!parsed.success) <span class="kw">return</span>
-  NextResponse.<span class="fn">json</span>(
-    { error: <span class="str">'Invalid request'</span> }, { status: <span class="num">400</span> }
-  );
+<span class="k">const</span> { success, data, error } =
+  schema.<span class="fn">safeParse</span>(<span class="k">await</span> req.<span class="fn">json</span>());
+<span class="k">if</span> (!success)
+  <span class="k">return</span> NextResponse.<span class="fn">json</span>(
+    { error: error.<span class="fn">flatten</span>() }, {status:<span class="n">400</span>});
 
-<span class="kw">const</span> { message, threadId } = parsed.data;
-<span class="cm">// safe to use now</span></pre>
-      </div>
-    </div>
+<span class="c">// Rate limit: 20 req/user/min</span>
+<span class="k">const</span> { allowed } = <span class="k">await</span> <span class="fn">rateLimit</span>(
+  <span class="s">`agent:${userId}`</span>, <span class="n">20</span>, <span class="n">60</span>);
+<span class="k">if</span> (!allowed) <span class="k">return</span> NextResponse.<span class="fn">json</span>(
+  { error: <span class="s">'Too many requests'</span> }, {status:<span class="n">429</span>});
 
-    <div class="score-compare">
-      <span class="sc-label">Before</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:50%;background:var(--orange)"></div></div>
-      <span class="sc-val" style="color:var(--orange)">5/10</span>
-    </div>
-    <div class="score-compare">
-      <span class="sc-label">After</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:80%;background:var(--green)"></div></div>
-      <span class="sc-val" style="color:var(--green)">8/10</span>
-    </div>
-  </div>
-</div>
-
-<!-- ─── FILE 5: lib/qstash/verify.ts -->
-<div class="file-card" id="card-4">
-  <div class="file-header" onclick="toggle('card-4')">
-    <span class="file-rank">#5</span>
-    <span class="file-path">lib/qstash/verify.ts</span>
-    <span class="score-badge mid">6 / 10 → 9 / 10</span>
-    <div class="impact-bar-wrap">
-      <span class="impact-label">+4pt</span>
-      <div class="impact-bar"><div class="impact-fill accent" style="width:33%"></div></div>
-    </div>
-    <span class="chevron">▶</span>
-  </div>
-  <div class="file-body">
-    <div class="issues-section">
-      <h4>Issues Found</h4>
-      <div class="issue-row">
-        <div class="severity-dot sev-high"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag high">HIGH</span> <code>url</code> param omitted from <code>receiver.verify()</code> — replay attacks possible</div>
-          <div class="issue-why">QStash signatures include the destination URL. Without passing <code>url: req.url</code> to <code>receiver.verify()</code>, an attacker can capture a valid signed payload from any worker endpoint and replay it against a different worker endpoint (e.g. replay a "briefing" job as a "data-index" job). The <code>url</code> field is mandatory for full protection.</div>
+<span class="c">// 500: log real error, return generic</span>
+console.<span class="fn">error</span>(<span class="s">'[agent]'</span>, error);
+<span class="k">return new</span> NextResponse(
+  <span class="s">'Internal Server Error'</span>, {status:<span class="n">500</span>});</pre>
+          </div>
         </div>
-      </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-high"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag high">HIGH</span> Empty signing keys fall through silently</div>
-          <div class="issue-why"><code>process.env.QSTASH_CURRENT_SIGNING_KEY || ''</code> — an empty string is accepted as a key value. If the env var is missing in production (e.g. misconfigured deployment), the receiver is initialised with empty keys and may accept or reject everything unpredictably.</div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:40%;background:var(--red)"></div></div><span class="sc-num c-red">4/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div><span class="sc-num c-green">9/10</span></div>
         </div>
       </div>
     </div>
 
-    <div class="issues-section mt-24">
-      <h4>Prioritised Fix Plan</h4>
-      <ul class="plan-list">
-        <li><span class="plan-num">P1</span> Pass <code>url: req.url</code> to <code>receiver.verify()</code></li>
-        <li><span class="plan-num">P2</span> Guard the env vars — throw at module load if either signing key is absent</li>
-      </ul>
-    </div>
-
-    <div class="before-after">
-      <div class="code-block">
-        <div class="code-block-label before">✗ BEFORE — URL missing</div>
-        <pre><span class="kw">const</span> isValid = <span class="kw">await</span> receiver.<span class="fn">verify</span>({
-  signature,
-  body,
-  <span class="cm">// ← url NOT passed</span>
-  <span class="cm">// replay attacks possible</span>
-});
-<span class="kw">return</span> isValid;</pre>
+    <!-- Admin stub routes -->
+    <div class="file-review" id="f-adminstubs">
+      <div class="file-bar" onclick="ft('f-adminstubs')">
+        <span class="file-path">app/api/admin/keys + bi-grants + audit-log + automations</span>
+        <span class="file-score-change">2 → 8</span>
+        <span class="f-arrow">▶</span>
       </div>
-      <div class="code-block">
-        <div class="code-block-label after">✓ AFTER — full verification</div>
-        <pre"><span class="kw">const</span> isValid = <span class="kw">await</span> receiver.<span class="fn">verify</span>({
-  signature,
-  body,
-  <span class="add">url: req.url,  // ← required!</span>
-});
-<span class="kw">return</span> isValid;</pre>
-      </div>
-    </div>
-
-    <div class="score-compare">
-      <span class="sc-label">Before</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:60%;background:var(--orange)"></div></div>
-      <span class="sc-val" style="color:var(--orange)">6/10</span>
-    </div>
-    <div class="score-compare">
-      <span class="sc-label">After</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div>
-      <span class="sc-val" style="color:var(--green)">9/10</span>
-    </div>
-  </div>
-</div>
-
-<!-- ─── FILE 6: lib/supabase/server.ts -->
-<div class="file-card" id="card-5">
-  <div class="file-header" onclick="toggle('card-5')">
-    <span class="file-rank">#6</span>
-    <span class="file-path">lib/supabase/server.ts</span>
-    <span class="score-badge mid">6 / 10 → 8 / 10</span>
-    <div class="impact-bar-wrap">
-      <span class="impact-label">+3pt</span>
-      <div class="impact-bar"><div class="impact-fill accent" style="width:25%"></div></div>
-    </div>
-    <span class="chevron">▶</span>
-  </div>
-  <div class="file-body">
-    <div class="issues-section">
-      <h4>Issues Found</h4>
-      <div class="issue-row">
-        <div class="severity-dot sev-high"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag high">HIGH</span> Three exported aliases for the same admin client cause confusion</div>
-          <div class="issue-why"><code>supabaseAdmin</code>, <code>supabaseServer</code>, and <code>supabase</code> all point to the same service-role client that bypasses RLS. A developer reaching for <code>supabase</code> (which sounds like "the normal client") will unknowingly bypass RLS on every query. This already happened — <code>lib/nango/client.ts</code> imports <code>supabase</code> and uses it for security-sensitive ownership checks.</div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-critical"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-critical">CRITICAL</span> All 4 admin routes have zero role enforcement</div>
+              <div class="issue-why"><code>/api/admin/keys</code>, <code>/api/admin/bi-grants</code>, <code>/api/admin/audit-log</code>, <code>/api/admin/automations</code> — each only checks <code>userId</code> (are you logged in?) but never checks if you're an <strong>admin</strong>. Any regular member can read admin audit logs and API keys.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Routes return placeholder <code>{ status: 'ok' }</code> — no real data</div>
+              <div class="issue-why">These are scaffolded stubs that return hardcoded responses. The admin layout enforces the role guard on the <em>page</em> level, but the <em>API</em> level has no guard — clients that call the API directly bypass the page entirely.</div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-medium"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag medium">MEDIUM</span> Placeholder credentials in test mode — unit tests pass with fake Supabase</div>
-          <div class="issue-why">The placeholder URL/key logic lets tests run without real credentials, which sounds good, but the placeholders also silently succeed on <code>createClient()</code>. Any test that hits Supabase gets <code>fetch</code> errors rather than meaningful test failures. Better to use a proper mock or a local Supabase instance.</div>
+        <div class="diff">
+          <div class="code-box">
+            <div class="code-label cl-before">✗ BEFORE — no role check (all 4 routes)</div>
+            <pre"><span class="k">export async function</span> <span class="fn">GET</span>() {
+  <span class="k">const</span> { userId, orgId } =
+    <span class="k">await</span> <span class="fn">auth</span>();
+  <span class="k">if</span> (!userId)
+    <span class="k">return new</span> Response(<span class="s">'Unauthorized'</span>, ...);
+  <span class="c">// ← NO ADMIN CHECK
+  // any logged-in user passes</span>
+  <span class="k">return</span> NextResponse.<span class="fn">json</span>(
+    { status: <span class="s">'ok'</span> }); <span class="c">// stub data</span>
+}</pre>
+          </div>
+          <div class="code-box">
+            <div class="code-label cl-after">✓ AFTER — admin-gated pattern</div>
+            <pre"><span class="k">export async function</span> <span class="fn">GET</span>() {
+  <span class="k">const</span> { userId, orgId, orgRole } =
+    <span class="k">await</span> <span class="fn">auth</span>();
+  <span class="k">if</span> (!userId || !orgId)
+    <span class="k">return new</span> NextResponse(
+      <span class="s">'Unauthorized'</span>, {status:<span class="n">401</span>});
+
+  <span class="add">const role = mapRole(orgRole ?? undefined);
+  if (role !== 'admin')
+    return new NextResponse(
+      'Forbidden', {status:403});</span>
+
+  <span class="c">// real implementation here</span>
+}</pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:20%;background:var(--red)"></div></div><span class="sc-num c-red">2/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:80%;background:var(--green)"></div></div><span class="sc-num c-green">8/10</span></div>
         </div>
       </div>
     </div>
 
-    <div class="issues-section mt-24">
-      <h4>Prioritised Fix Plan</h4>
-      <ul class="plan-list">
-        <li><span class="plan-num">P1</span> Remove <code>supabaseServer</code> and <code>supabase</code> aliases — only export <code>supabaseAdmin</code> with a JSDoc warning: "Bypasses RLS — use withRLS() for user queries"</li>
-        <li><span class="plan-num">P2</span> Update <code>lib/nango/client.ts</code> import to use <code>supabaseAdmin</code> explicitly</li>
-      </ul>
-    </div>
-
-    <div class="score-compare">
-      <span class="sc-label">Before</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:60%;background:var(--orange)"></div></div>
-      <span class="sc-val" style="color:var(--orange)">6/10</span>
-    </div>
-    <div class="score-compare">
-      <span class="sc-label">After</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:80%;background:var(--green)"></div></div>
-      <span class="sc-val" style="color:var(--green)">8/10</span>
-    </div>
-  </div>
-</div>
-
-<!-- ─── FILE 7: lib/qstash/client.ts -->
-<div class="file-card" id="card-6">
-  <div class="file-header" onclick="toggle('card-6')">
-    <span class="file-rank">#7</span>
-    <span class="file-path">lib/qstash/client.ts</span>
-    <span class="score-badge high">7 / 10 → 9 / 10</span>
-    <div class="impact-bar-wrap">
-      <span class="impact-label">+3pt</span>
-      <div class="impact-bar"><div class="impact-fill accent" style="width:25%"></div></div>
-    </div>
-    <span class="chevron">▶</span>
-  </div>
-  <div class="file-body">
-    <div class="issues-section">
-      <h4>Issues Found</h4>
-      <div class="issue-row">
-        <div class="severity-dot sev-high"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag high">HIGH</span> Duplicate Supabase client instantiated at module load</div>
-          <div class="issue-why">The file creates its own <code>createClient(...)</code> with hardcoded dummy URL instead of importing <code>supabaseAdmin</code>. This creates a second connection pool, misses any singleton optimisation, and the "local-dummy.supabase.co" placeholder will never reach prod. Jobs queued to <code>pending_background_jobs</code> silently fail.</div>
-        </div>
+    <!-- scratch/ directory -->
+    <div class="file-review" id="f-scratch">
+      <div class="file-bar" onclick="ft('f-scratch')">
+        <span class="file-path">scratch/ <span style="color:var(--orange);font-size:10px;">16 debug files committed to repo</span></span>
+        <span class="file-score-change">— → fixed</span>
+        <span class="f-arrow">▶</span>
       </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-medium"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag medium">MEDIUM</span> <code>body: any</code> type — no schema on dispatched job payloads</div>
-          <div class="issue-why">Worker routes receive raw JSON with no validated shape. A consumer that serialises the wrong fields creates a silent mismatch between producer and worker. Define a <code>JobPayload</code> discriminated union and validate with Zod.</div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> 16 debug scripts in repo root — some make live DB calls</div>
+              <div class="issue-why">Files like <code>check-supabase.ts</code>, <code>debug-supabase.ts</code>, <code>check-jwt.ts</code>, <code>test_nango_security.ts</code> are committed. They reveal infrastructure topology to anyone who clones the repo and may get accidentally bundled.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> <code>scratch/</code> not in <code>.gitignore</code></div>
+              <div class="issue-why">The directory is tracked and will appear in every git clone, PR, and code review. Also missing: <code>.env.example</code> so new contributors know which env vars are required.</div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+        <div class="diff diff-1">
+          <div class="code-box">
+            <div class="code-label cl-after">✓ FIX — gitignore + env.example</div>
+            <pre"><span class="c"># Add to .gitignore:</span>
+<span class="add">scratch/
+.env.example  # keep this — template only</span>
 
-    <div class="issues-section mt-24">
-      <h4>Prioritised Fix Plan</h4>
-      <ul class="plan-list">
-        <li><span class="plan-num">P1</span> Replace the inline <code>createClient</code> with <code>import { supabaseAdmin } from '@/lib/supabase/server'</code></li>
-        <li><span class="plan-num">P2</span> Type <code>body</code> as a discriminated union (or at minimum <code>Record&lt;string,unknown&gt;</code>) and validate before insert</li>
-      </ul>
-    </div>
-
-    <div class="score-compare">
-      <span class="sc-label">Before</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:70%;background:var(--orange)"></div></div>
-      <span class="sc-val" style="color:var(--orange)">7/10</span>
-    </div>
-    <div class="score-compare">
-      <span class="sc-label">After</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div>
-      <span class="sc-val" style="color:var(--green)">9/10</span>
-    </div>
-  </div>
-</div>
-
-<!-- ─── FILE 8: scratch/ directory -->
-<div class="file-card" id="card-7">
-  <div class="file-header" onclick="toggle('card-7')">
-    <span class="file-rank">#8</span>
-    <span class="file-path">scratch/ &nbsp;<span style="color:var(--orange);font-size:11px;">(16 debug files in repo)</span></span>
-    <span class="score-badge mid">— / 10</span>
-    <div class="impact-bar-wrap">
-      <span class="impact-label">+2pt</span>
-      <div class="impact-bar"><div class="impact-fill accent" style="width:17%"></div></div>
-    </div>
-    <span class="chevron">▶</span>
-  </div>
-  <div class="file-body">
-    <div class="issues-section">
-      <h4>Issues Found</h4>
-      <div class="issue-row">
-        <div class="severity-dot sev-high"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag high">HIGH</span> 16 debug/test scripts committed to main — including credentials checks</div>
-          <div class="issue-why">Files like <code>check-supabase.ts</code>, <code>check-jwt.ts</code>, <code>debug-supabase.ts</code>, <code>test_nango_security.ts</code> are in the repo root. Several of these read environment variables and make live API calls. They reveal your infrastructure topology to anyone who clones the repo, and they may accidentally get bundled by a misconfigured build.</div>
-        </div>
-      </div>
-      <div class="issue-row">
-        <div class="severity-dot sev-medium"></div>
-        <div class="issue-content">
-          <div class="issue-title"><span class="tag medium">MEDIUM</span> No <code>.env.example</code> file — new devs don't know which vars are needed</div>
-          <div class="issue-why">The architecture spec (ATH-22) explicitly required creating <code>.env.example</code>. It's missing. A new contributor has no reference for which environment variables to configure and will get cryptic runtime errors.</div>
+<span class="c"># Create .env.example:</span>
+<span class="c"># --- Required ---</span>
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_DB_URL=
+CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+NANGO_SECRET_KEY=
+ANTHROPIC_API_KEY=
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+QSTASH_TOKEN=
+QSTASH_CURRENT_SIGNING_KEY=
+QSTASH_NEXT_SIGNING_KEY=
+ENCRYPTION_SECRET=
+NEXT_PUBLIC_APP_URL=http://localhost:3000</pre>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="issues-section mt-24">
-      <h4>Prioritised Fix Plan</h4>
-      <ul class="plan-list">
-        <li><span class="plan-num">P1</span> Add <code>scratch/</code> to <code>.gitignore</code> and remove tracked files: <code>git rm -r --cached scratch/</code></li>
-        <li><span class="plan-num">P2</span> Move any useful scripts to <code>scripts/</code> with proper TS project config and add to <code>.gitignore</code></li>
-        <li><span class="plan-num">P3</span> Create <code>.env.example</code> with all required keys (no values, just key names and comments)</li>
-      </ul>
+  </div>
+</div><!-- /ATH-22 -->
+
+<!-- ── ATH-26: Dashboard layout ─────────────────────────── -->
+<div class="task-block" id="t26">
+  <div class="task-head" onclick="tt('t26')">
+    <span class="task-id">ATH-26</span>
+    <span class="task-name">Build basic dashboard layout shell with navigation</span>
+    <div class="task-score-pair">
+      <span class="score-pill sp-green">Before 8/10</span>
+      <span style="color:var(--text3);font-size:12px;">→</span>
+      <span class="score-pill sp-green">After 10/10</span>
     </div>
+    <span class="arrow">▶</span>
+  </div>
+  <div class="task-body">
+    <div class="file-review" id="f-dlayout">
+      <div class="file-bar" onclick="ft('f-dlayout')">
+        <span class="file-path">app/(dashboard)/layout.tsx + app/(dashboard)/admin/layout.tsx</span>
+        <span class="file-score-change">8 → 10</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-good"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-good">GOOD</span> Admin layout correctly gates on <code>role === 'admin'</code></div>
+              <div class="issue-why">The admin layout calls <code>resolveUserAccess()</code> and renders an "Access Denied" screen if role ≠ admin. Correct pattern for page-level protection.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-medium"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-medium">MEDIUM</span> Dashboard layout passes <code>orgRole</code> to <code>resolveUserAccess</code> — after RBAC fix this param is removed</div>
+              <div class="issue-why">Once the RBAC deny-by-default fix is applied (removing the Clerk fallback), the <code>orgRole</code> param on <code>resolveUserAccess</code> is removed. The dashboard layout call <code>resolveUserAccess(userId, orgId, orgRole)</code> must be updated to <code>resolveUserAccess(userId, orgId)</code>.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-low"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-low">LOW</span> Root layout missing <code>Toaster</code> from sonner</div>
+              <div class="issue-why"><code>components/ui/sonner.tsx</code> exists but <code>app/layout.tsx</code> doesn't render the <code>&lt;Toaster /&gt;</code>. Toast notifications from any page will silently do nothing.</div>
+            </div>
+          </div>
+        </div>
+        <div class="diff diff-1">
+          <div class="code-box">
+            <div class="code-label cl-after">✓ FIX — add Toaster to root layout</div>
+            <pre"><span class="k">import</span> { Toaster } <span class="k">from</span>
+  <span class="s">'@/components/ui/sonner'</span>;
 
-    <div class="score-compare">
-      <span class="sc-label">Sprint</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:42%;background:var(--orange)"></div></div>
-      <span class="sc-val" style="color:var(--orange)">Before</span>
+<span class="c">// Inside &lt;body&gt;:</span>
+<span class="add">&lt;Toaster richColors position="top-right" /&gt;</span>
+{children}</pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:80%;background:var(--green)"></div></div><span class="sc-num c-green">8/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:100%;background:var(--green)"></div></div><span class="sc-num c-green">10/10</span></div>
+        </div>
+      </div>
     </div>
-    <div class="score-compare">
-      <span class="sc-label">Sprint</span>
-      <div class="sc-bar-wrap"><div class="sc-bar" style="width:81%;background:var(--green)"></div></div>
-      <span class="sc-val" style="color:var(--green)">After</span>
+  </div>
+</div><!-- /ATH-26 -->
+
+<!-- ── ATH-39: Synthesis agent ───────────────────────────── -->
+<div class="task-block" id="t39">
+  <div class="task-head" onclick="tt('t39')">
+    <span class="task-id">ATH-39</span>
+    <span class="task-name">Implement synthesis agent — standard + BI dual mode</span>
+    <div class="task-score-pair">
+      <span class="score-pill sp-orange">Before 6/10</span>
+      <span style="color:var(--text3);font-size:12px;">→</span>
+      <span class="score-pill sp-green">After 9/10</span>
+    </div>
+    <span class="arrow">▶</span>
+  </div>
+  <div class="task-body">
+    <div class="file-review" id="f-synth">
+      <div class="file-bar" onclick="ft('f-synth')">
+        <span class="file-path">lib/agents/synthesis-agent.ts</span>
+        <span class="file-score-change">6 → 9</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-high"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-high">HIGH</span> Uses module-level <code>model</code> singleton — can't use BYOK or tier selection</div>
+              <div class="issue-why">Imports <code>model</code> from llm-factory at module load time. Once BYOK is implemented, synthesis needs <code>resolveModelClient(orgId, 'complex')</code> since it's the most token-intensive step. The org context is available in state.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-medium"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-medium">MEDIUM</span> Context window not bounded — very large chunk sets can exceed token limits</div>
+              <div class="issue-why">All retrieved chunks are joined into one string and sent in a single prompt. 50 chunks × 500 tokens = 25k tokens in the context, which may hit model limits and cause truncation or errors.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-good"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-good">GOOD</span> BI/standard dual-mode prompt and citation extraction are correct</div>
+              <div class="issue-why">The mode detection (<code>task_type === 'analytical' || is_cross_dept_query</code>) and the regex-based citation extractor are clean and production-ready.</div>
+            </div>
+          </div>
+        </div>
+        <div class="diff">
+          <div class="code-box">
+            <div class="code-label cl-before">✗ BEFORE — shared model, unbounded context</div>
+            <pre"><span class="del">import { model } from '../langgraph/llm-factory';</span>
+<span class="c">// Uses global singleton, ignores BYOK</span>
+
+<span class="k">const</span> context = retrieved_chunks
+  .<span class="fn">map</span>(c => <span class="s">`[${c.document_id}]
+  Content: ${c.content_preview}`</span>)
+  .<span class="fn">join</span>(<span class="s">'\n\n---\n\n'</span>);
+<span class="c">// ↑ no token limit — can be huge</span></pre>
+          </div>
+          <div class="code-box">
+            <div class="code-label cl-after">✓ AFTER — BYOK model + bounded context</div>
+            <pre"><span class="k">import</span> { resolveModelClient }
+  <span class="k">from</span> <span class="s">'../langgraph/llm-factory'</span>;
+
+<span class="k">const</span> MAX_CHUNKS = <span class="n">20</span>; <span class="c">// ~10k tokens</span>
+<span class="k">const</span> topChunks = retrieved_chunks
+  .<span class="fn">sort</span>((a, b) =>
+    (b.similarity ?? <span class="n">0</span>) - (a.similarity ?? <span class="n">0</span>))
+  .<span class="fn">slice</span>(<span class="n">0</span>, MAX_CHUNKS);
+
+<span class="k">const</span> model = <span class="k">await</span>
+  <span class="fn">resolveModelClient</span>(state.orgId, <span class="s">'complex'</span>);
+<span class="k">const</span> response = <span class="k">await</span> model.<span class="fn">invoke</span>([...]);</pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:60%;background:var(--orange)"></div></div><span class="sc-num c-orange">6/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:90%;background:var(--green)"></div></div><span class="sc-num c-green">9/10</span></div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
+</div><!-- /ATH-39 -->
 
-</div><!-- end tab-files -->
+<!-- ── ATH-26 worker routes (already part of broader task) ── -->
+<div class="task-block" id="t-workers">
+  <div class="task-head" onclick="tt('t-workers')">
+    <span class="task-id">WORKERS</span>
+    <span class="task-name">Background worker routes — nango-fetch, graph-build, index-delta</span>
+    <div class="task-score-pair">
+      <span class="score-pill sp-green">Before 7/10</span>
+      <span style="color:var(--text3);font-size:12px;">→</span>
+      <span class="score-pill sp-green">After 10/10</span>
+    </div>
+    <span class="arrow">▶</span>
+  </div>
+  <div class="task-body">
+    <div class="file-review" id="f-workers">
+      <div class="file-bar" onclick="ft('f-workers')">
+        <span class="file-path">app/api/worker/nango-fetch + graph-build + index-delta</span>
+        <span class="file-score-change">7 → 10</span>
+        <span class="f-arrow">▶</span>
+      </div>
+      <div class="file-content">
+        <div class="issue-list">
+          <h4>Issues</h4>
+          <div class="issue">
+            <div class="sev-dot sev-good"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-good">GOOD</span> QStash signature verified on every worker route</div>
+              <div class="issue-why">All three worker routes call <code>verifyQStashSignature(request)</code> at the top before any payload processing. Correct pattern.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-good"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-good">GOOD</span> Slot release on error prevents deadlocks</div>
+              <div class="issue-why"><code>nango-fetch</code> releases the concurrency slot even when the fetch fails, wrapped in its own try/catch. Correct defensive pattern.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-medium"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-medium">MEDIUM</span> All workers will break once <code>verify.ts</code> adds the <code>url</code> param</div>
+              <div class="issue-why">After the QStash fix, <code>verifyQStashSignature</code> will need <code>req.url</code>. Worker routes pass <code>request: Request</code> which has <code>.url</code> available — no change to the worker routes needed, but confirm the fix is compatible.</div>
+            </div>
+          </div>
+          <div class="issue">
+            <div class="sev-dot sev-medium"></div>
+            <div class="issue-body">
+              <div class="issue-title"><span class="tag t-medium">MEDIUM</span> <code>NEXT_PUBLIC_APP_URL</code> fallback is empty string — graph-build URL is wrong</div>
+              <div class="issue-why">Both nango-fetch and index-delta build the graph-build URL as <code>${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api/worker/graph-build</code>. If the env var is not set, the URL becomes <code>/api/worker/graph-build</code> — a relative URL that QStash cannot call.</div>
+            </div>
+          </div>
+        </div>
+        <div class="diff diff-1">
+          <div class="code-box">
+            <div class="code-label cl-after">✓ FIX — guard APP_URL</div>
+            <pre"><span class="k">const</span> appUrl = process.env.NEXT_PUBLIC_APP_URL;
+<span class="k">if</span> (!appUrl) {
+  console.<span class="fn">error</span>(
+    <span class="s">'[nango-fetch] NEXT_PUBLIC_APP_URL not set'</span>);
+  <span class="c">// Skip graph-build enqueue, don't crash</span>
+} <span class="k">else</span> {
+  <span class="k">await</span> qstash.<span class="fn">publishJSON</span>({
+    url: <span class="s">`${appUrl}/api/worker/graph-build`</span>,
+    body: { org_id: orgId, document_ids, ... }
+  });
+}</pre>
+          </div>
+        </div>
+        <div class="score-compare">
+          <div class="sc-row"><span class="sc-lbl">Before</span><div class="sc-track"><div class="sc-bar" style="width:70%;background:var(--orange)"></div></div><span class="sc-num c-orange">7/10</span></div>
+          <div class="sc-row"><span class="sc-lbl">After</span><div class="sc-track"><div class="sc-bar" style="width:100%;background:var(--green)"></div></div><span class="sc-num c-green">10/10</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /workers -->
 
-<!-- ═════════════════════════════════ TAB: IMPACT RANKING -->
-<div class="tab-panel" id="tab-ranking">
-  <p class="section-title">Files Ranked by Impact</p>
+</div><!-- /panel tasks -->
 
-  <div class="rank-row">
-    <span class="rank-num">1</span>
-    <span class="rank-file">middleware.ts</span>
-    <div class="rank-bar-wrap"><div class="rank-fill" style="width:100%"></div></div>
-    <span class="rank-impact">+12pt</span>
-  </div>
-  <div class="rank-row">
-    <span class="rank-num">2</span>
-    <span class="rank-file">lib/langgraph/llm-factory.ts</span>
-    <div class="rank-bar-wrap"><div class="rank-fill" style="width:67%"></div></div>
-    <span class="rank-impact">+8pt</span>
-  </div>
-  <div class="rank-row">
-    <span class="rank-num">3</span>
-    <span class="rank-file">lib/auth/rbac.ts</span>
-    <div class="rank-bar-wrap"><div class="rank-fill" style="width:50%"></div></div>
-    <span class="rank-impact">+6pt</span>
-  </div>
-  <div class="rank-row">
-    <span class="rank-num">4</span>
-    <span class="rank-file">app/api/agent/route.ts</span>
-    <div class="rank-bar-wrap"><div class="rank-fill" style="width:42%"></div></div>
-    <span class="rank-impact">+5pt</span>
-  </div>
-  <div class="rank-row">
-    <span class="rank-num">5</span>
-    <span class="rank-file">lib/qstash/verify.ts</span>
-    <div class="rank-bar-wrap"><div class="rank-fill" style="width:33%"></div></div>
-    <span class="rank-impact">+4pt</span>
-  </div>
-  <div class="rank-row">
-    <span class="rank-num">6</span>
-    <span class="rank-file">lib/supabase/server.ts</span>
-    <div class="rank-bar-wrap"><div class="rank-fill" style="width:25%"></div></div>
-    <span class="rank-impact">+3pt</span>
-  </div>
-  <div class="rank-row">
-    <span class="rank-num">7</span>
-    <span class="rank-file">lib/qstash/client.ts</span>
-    <div class="rank-bar-wrap"><div class="rank-fill" style="width:25%"></div></div>
-    <span class="rank-impact">+3pt</span>
-  </div>
-  <div class="rank-row">
-    <span class="rank-num">8</span>
-    <span class="rank-file">scratch/ directory</span>
-    <div class="rank-bar-wrap"><div class="rank-fill" style="width:17%"></div></div>
-    <span class="rank-impact">+2pt</span>
-  </div>
-
-  <div class="callout mt-24">
-    <strong>Key insight:</strong> Files #1–3 together account for <strong>26 of the 39 available points</strong> (67%). Fix middleware + llm-factory + rbac first and the sprint jumps from 42% to ~70% readiness before touching anything else. The remaining 5 files are important but diminishing returns.
-  </div>
-
-  <div class="callout mt-24" style="border-color: rgba(96,165,250,0.3); background: rgba(96,165,250,0.06);">
-    <strong style="color:var(--blue);">Files that are already solid:</strong> <code>lib/supabase/rls-client.ts</code> is genuinely well-written — dual enforcement (headers + SET LOCAL), proper grant resolution, clear fallback path. <code>lib/nango/client.ts</code> has strong ownership verification. <code>lib/qstash/client.ts</code> has correct atomic double-claim prevention on <code>releaseSlot()</code>. These are real production-quality patterns worth calling out to the team.
-  </div>
-</div>
-
-<!-- ═════════════════════════════════ TAB: ABLATION TABLE -->
-<div class="tab-panel" id="tab-ablation">
-  <p class="section-title">Ablation Study — Cumulative Readiness</p>
-  <p style="color:var(--text2);font-size:14px;margin-bottom:24px;">Each row shows: what the sprint readiness score is if you've fixed all files up to and including that rank. Fixing in order of impact is the optimal strategy.</p>
-
-  <table class="ablation-table">
+<!-- ════════════════════ PANEL: ABLATION ════════════════════ -->
+<div class="panel" id="p-ablation">
+  <p style="color:var(--text2);font-size:13px;margin-bottom:24px;">Each row shows cumulative sprint readiness if you apply fixes in order of impact. Fixing the top 3 items gets you from 42% to 80%.</p>
+  <table class="abl-table">
     <thead>
       <tr>
-        <th>Order Fixed</th>
-        <th>File</th>
-        <th>Isolated Score Before</th>
-        <th>Isolated Score After</th>
-        <th>Sprint Readiness</th>
-        <th>Delta</th>
+        <th>Step</th>
+        <th>File / Task</th>
+        <th>ATH</th>
+        <th>Score Before</th>
+        <th>Score After</th>
+        <th>Sprint ↑</th>
+        <th>Cumulative</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Baseline</td>
-        <td class="file-col">—</td>
-        <td>—</td>
-        <td>—</td>
-        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--red)">42%</td>
-        <td>—</td>
-      </tr>
-      <tr>
-        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #1</td>
-        <td class="file-col">middleware.ts</td>
-        <td><span class="tag low">0/10</span></td>
-        <td><span class="tag good">9/10</span></td>
-        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--orange)">54%</td>
-        <td><span class="delta-pill">+12pt</span></td>
-      </tr>
-      <tr>
-        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #2</td>
-        <td class="file-col">lib/langgraph/llm-factory.ts</td>
-        <td><span class="tag low">2/10</span></td>
-        <td><span class="tag good">8/10</span></td>
-        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--orange)">62%</td>
-        <td><span class="delta-pill">+8pt</span></td>
-      </tr>
-      <tr>
-        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #3</td>
-        <td class="file-col">lib/auth/rbac.ts</td>
-        <td><span class="tag mid">5/10</span></td>
-        <td><span class="tag good">9/10</span></td>
-        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent)">68%</td>
-        <td><span class="delta-pill">+6pt</span></td>
-      </tr>
-      <tr>
-        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #4</td>
-        <td class="file-col">app/api/agent/route.ts</td>
-        <td><span class="tag mid">5/10</span></td>
-        <td><span class="tag good">8/10</span></td>
-        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent)">73%</td>
-        <td><span class="delta-pill">+5pt</span></td>
-      </tr>
-      <tr>
-        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #5</td>
-        <td class="file-col">lib/qstash/verify.ts</td>
-        <td><span class="tag mid">6/10</span></td>
-        <td><span class="tag good">9/10</span></td>
-        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent)">77%</td>
-        <td><span class="delta-pill">+4pt</span></td>
-      </tr>
-      <tr>
-        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #6</td>
-        <td class="file-col">lib/supabase/server.ts</td>
-        <td><span class="tag mid">6/10</span></td>
-        <td><span class="tag good">8/10</span></td>
-        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green)">80%</td>
-        <td><span class="delta-pill">+3pt</span></td>
-      </tr>
-      <tr>
-        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #7</td>
-        <td class="file-col">lib/qstash/client.ts</td>
-        <td><span class="tag high">7/10</span></td>
-        <td><span class="tag good">9/10</span></td>
-        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green)">83%</td>
-        <td><span class="delta-pill">+3pt</span></td>
-      </tr>
-      <tr>
-        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;">Fix #8</td>
-        <td class="file-col">scratch/ cleanup</td>
-        <td style="color:var(--text3)">—</td>
-        <td style="color:var(--text3)">—</td>
-        <td style="font-family:'Syne',sans-serif;font-weight:800;color:var(--green)">85%</td>
-        <td><span class="delta-pill">+2pt</span></td>
-      </tr>
+      <tr><td class="mono" style="color:var(--text3)">Baseline</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td style="font-family:'Fraunces',serif;font-weight:900;color:var(--red)">42%</td></tr>
+      <tr><td class="mono" style="color:var(--text3)">#1</td><td class="mono" style="color:var(--blue)">middleware.ts</td><td><span class="dp dp-g">ATH-23</span></td><td style="color:var(--red)">0/10</td><td style="color:var(--green)">10/10</td><td><span class="dp dp-g">+14pt</span></td><td style="font-family:'Fraunces',serif;font-weight:900;color:var(--orange)">56%</td></tr>
+      <tr><td class="mono" style="color:var(--text3)">#2</td><td class="mono" style="color:var(--blue)">lib/langgraph/llm-factory.ts</td><td><span class="dp dp-g">ATH-21</span></td><td style="color:var(--red)">1/10</td><td style="color:var(--green)">9/10</td><td><span class="dp dp-g">+9pt</span></td><td style="font-family:'Fraunces',serif;font-weight:900;color:var(--orange)">65%</td></tr>
+      <tr><td class="mono" style="color:var(--text3)">#3</td><td class="mono" style="color:var(--blue)">lib/auth/rbac.ts</td><td><span class="dp dp-g">ATH-23</span></td><td style="color:var(--red)">4/10</td><td style="color:var(--green)">9/10</td><td><span class="dp dp-g">+7pt</span></td><td style="font-family:'Fraunces',serif;font-weight:900;color:var(--accent)">72%</td></tr>
+      <tr><td class="mono" style="color:var(--text3)">#4</td><td class="mono" style="color:var(--blue)">app/api/agent/route.ts</td><td><span class="dp dp-g">ATH-22</span></td><td style="color:var(--red)">4/10</td><td style="color:var(--green)">9/10</td><td><span class="dp dp-g">+5pt</span></td><td style="font-family:'Fraunces',serif;font-weight:900;color:var(--accent)">77%</td></tr>
+      <tr><td class="mono" style="color:var(--text3)">#5</td><td class="mono" style="color:var(--blue)">app/api/admin/* (4 stub routes)</td><td><span class="dp dp-g">ATH-22</span></td><td style="color:var(--red)">2/10</td><td style="color:var(--green)">8/10</td><td><span class="dp dp-g">+4pt</span></td><td style="font-family:'Fraunces',serif;font-weight:900;color:var(--accent)">81%</td></tr>
+      <tr><td class="mono" style="color:var(--text3)">#6</td><td class="mono" style="color:var(--blue)">lib/qstash/verify.ts</td><td><span class="dp dp-g">ATH-25</span></td><td style="color:var(--orange)">5/10</td><td style="color:var(--green)">10/10</td><td><span class="dp dp-g">+3pt</span></td><td style="font-family:'Fraunces',serif;font-weight:900;color:var(--green)">84%</td></tr>
+      <tr><td class="mono" style="color:var(--text3)">#7</td><td class="mono" style="color:var(--blue)">lib/nango/client.ts + session/route</td><td><span class="dp dp-g">ATH-27</span></td><td style="color:var(--orange)">6/10</td><td style="color:var(--green)">9/10</td><td><span class="dp dp-g">+3pt</span></td><td style="font-family:'Fraunces',serif;font-weight:900;color:var(--green)">87%</td></tr>
+      <tr><td class="mono" style="color:var(--text3)">#8</td><td class="mono" style="color:var(--blue)">lib/qstash/client.ts</td><td><span class="dp dp-g">ATH-25</span></td><td style="color:var(--orange)">7/10</td><td style="color:var(--green)">10/10</td><td><span class="dp dp-g">+2pt</span></td><td style="font-family:'Fraunces',serif;font-weight:900;color:var(--green)">89%</td></tr>
+      <tr><td class="mono" style="color:var(--text3)">#9</td><td class="mono" style="color:var(--blue)">lib/langgraph/graph.ts</td><td><span class="dp dp-g">ATH-21</span></td><td style="color:var(--orange)">6/10</td><td style="color:var(--green)">9/10</td><td><span class="dp dp-g">+2pt</span></td><td style="font-family:'Fraunces',serif;font-weight:900;color:var(--green)">91%</td></tr>
+      <tr><td class="mono" style="color:var(--text3)">#10</td><td class="mono" style="color:var(--blue)">lib/supabase/server.ts</td><td><span class="dp dp-g">ATH-20</span></td><td style="color:var(--orange)">6/10</td><td style="color:var(--green)">9/10</td><td><span class="dp dp-g">+2pt</span></td><td style="font-family:'Fraunces',serif;font-weight:900;color:var(--green)">93%</td></tr>
+      <tr><td class="mono" style="color:var(--text3)">#11</td><td class="mono" style="color:var(--blue)">lib/agents/synthesis-agent.ts</td><td><span class="dp dp-g">ATH-39</span></td><td style="color:var(--orange)">6/10</td><td style="color:var(--green)">9/10</td><td><span class="dp dp-g">+1pt</span></td><td style="font-family:'Fraunces',serif;font-weight:900;color:var(--green)">94%</td></tr>
+      <tr><td class="mono" style="color:var(--text3)">#12</td><td class="mono" style="color:var(--blue)">scratch/ + .env.example + misc</td><td style="color:var(--text3)">—</td><td style="color:var(--text3)">—</td><td style="color:var(--text3)">—</td><td><span class="dp dp-g">+2pt</span></td><td style="font-family:'Fraunces',serif;font-weight:900;color:var(--green)">96%</td></tr>
     </tbody>
   </table>
-
-  <p style="color:var(--text2);font-size:13px;margin-top:8px;">
-    * Sprint readiness is a composite of: security controls functional (40%), architecture spec compliance (30%), code quality &amp; maintainability (20%), operational readiness (10%).
-    Scores are estimates based on static analysis — not automated metrics.
-  </p>
 </div>
 
-<!-- ═════════════════════════════════ TAB: SPRINT SCORECARD -->
-<div class="tab-panel" id="tab-sprint">
-  <div class="final-score">
-    <h2>Sprint Readiness — Before vs After</h2>
-
-    <div class="score-row">
-      <span class="score-row-label">Before</span>
-      <div class="score-row-bar"><div class="score-row-fill before" style="width:42%"></div></div>
-      <span class="score-row-num before">42%</span>
+<!-- ════════════════════ PANEL: RANKING ════════════════════ -->
+<div class="panel" id="p-ranking">
+  <div class="rank-list">
+    <div class="rank-row">
+      <span class="rank-n">1</span>
+      <div class="rank-info"><div class="rank-task">ATH-23</div><div class="rank-file">middleware.ts — FILE MISSING</div></div>
+      <div class="rank-bar-wrap"><div class="rank-fill" style="width:100%"></div></div>
+      <span class="rank-delta">+14pt</span>
     </div>
-    <div class="score-row">
-      <span class="score-row-label">After</span>
-      <div class="score-row-bar"><div class="score-row-fill after" style="width:85%"></div></div>
-      <span class="score-row-num after">85%</span>
+    <div class="rank-row">
+      <span class="rank-n">2</span>
+      <div class="rank-info"><div class="rank-task">ATH-21</div><div class="rank-file">lib/langgraph/llm-factory.ts — broken singleton + no BYOK</div></div>
+      <div class="rank-bar-wrap"><div class="rank-fill" style="width:64%"></div></div>
+      <span class="rank-delta">+9pt</span>
+    </div>
+    <div class="rank-row">
+      <span class="rank-n">3</span>
+      <div class="rank-info"><div class="rank-task">ATH-23</div><div class="rank-file">lib/auth/rbac.ts — Clerk fallback privilege escalation</div></div>
+      <div class="rank-bar-wrap"><div class="rank-fill" style="width:50%"></div></div>
+      <span class="rank-delta">+7pt</span>
+    </div>
+    <div class="rank-row">
+      <span class="rank-n">4</span>
+      <div class="rank-info"><div class="rank-task">ATH-22</div><div class="rank-file">app/api/agent/route.ts — no validation, no rate limit, leaked errors</div></div>
+      <div class="rank-bar-wrap"><div class="rank-fill" style="width:36%"></div></div>
+      <span class="rank-delta">+5pt</span>
+    </div>
+    <div class="rank-row">
+      <span class="rank-n">5</span>
+      <div class="rank-info"><div class="rank-task">ATH-22</div><div class="rank-file">app/api/admin/* — 4 routes with zero role enforcement</div></div>
+      <div class="rank-bar-wrap"><div class="rank-fill" style="width:29%"></div></div>
+      <span class="rank-delta">+4pt</span>
+    </div>
+    <div class="rank-row">
+      <span class="rank-n">6</span>
+      <div class="rank-info"><div class="rank-task">ATH-25</div><div class="rank-file">lib/qstash/verify.ts — missing url param, empty key fallback</div></div>
+      <div class="rank-bar-wrap"><div class="rank-fill" style="width:21%"></div></div>
+      <span class="rank-delta">+3pt</span>
+    </div>
+    <div class="rank-row">
+      <span class="rank-n">7</span>
+      <div class="rank-info"><div class="rank-task">ATH-27</div><div class="rank-file">lib/nango/client.ts + session/route.ts</div></div>
+      <div class="rank-bar-wrap"><div class="rank-fill" style="width:21%"></div></div>
+      <span class="rank-delta">+3pt</span>
+    </div>
+    <div class="rank-row">
+      <span class="rank-n">8</span>
+      <div class="rank-info"><div class="rank-task">ATH-25</div><div class="rank-file">lib/qstash/client.ts — duplicate Supabase client</div></div>
+      <div class="rank-bar-wrap"><div class="rank-fill" style="width:14%"></div></div>
+      <span class="rank-delta">+2pt</span>
+    </div>
+    <div class="rank-row">
+      <span class="rank-n">9</span>
+      <div class="rank-info"><div class="rank-task">ATH-21</div><div class="rank-file">lib/langgraph/graph.ts — synthesis node + HITL gate missing</div></div>
+      <div class="rank-bar-wrap"><div class="rank-fill" style="width:14%"></div></div>
+      <span class="rank-delta">+2pt</span>
+    </div>
+    <div class="rank-row">
+      <span class="rank-n">10</span>
+      <div class="rank-info"><div class="rank-task">ATH-20</div><div class="rank-file">lib/supabase/server.ts — misleading aliases</div></div>
+      <div class="rank-bar-wrap"><div class="rank-fill" style="width:14%"></div></div>
+      <span class="rank-delta">+2pt</span>
+    </div>
+    <div class="rank-row">
+      <span class="rank-n">11</span>
+      <div class="rank-info"><div class="rank-task">Various</div><div class="rank-file">synthesis-agent.ts · audit.ts · checkpointer.ts · workers · layout.tsx</div></div>
+      <div class="rank-bar-wrap"><div class="rank-fill" style="width:7%"></div></div>
+      <span class="rank-delta">+3pt</span>
     </div>
   </div>
 
-  <p class="section-title">Dimension Breakdown</p>
+  <div class="callout ca-ok" style="margin-top:24px">
+    <strong>Files that are already solid — ship as-is:</strong><br>
+    <code>lib/supabase/rls-client.ts</code> — dual enforcement is excellent production-grade security.<br>
+    <code>lib/supabase/vector.ts</code> — correctly routes all vector queries through withRLS().<br>
+    <code>lib/graph/interrupts.ts</code> — HITL decision logic and audit logging are well-structured.<br>
+    <code>lib/qstash/client.ts::releaseSlot()</code> — atomic double-claim prevention is correct.<br>
+    <code>lib/auth/clerk.ts</code> — role mapping is clean. Just add the type export.
+  </div>
+</div>
 
-  <table class="ablation-table">
+<!-- ════════════════════ PANEL: SCORECARD ════════════════════ -->
+<div class="panel" id="p-scorecard">
+
+  <div class="final-card">
+    <h2>Sprint Production Readiness — Before vs After</h2>
+    <div class="big-bar-row">
+      <span class="big-bar-lbl">Before</span>
+      <div class="big-track"><div class="big-fill bef-fill" style="width:42%"></div></div>
+      <span class="big-num" style="color:var(--red)">42%</span>
+    </div>
+    <div class="big-bar-row">
+      <span class="big-bar-lbl">After</span>
+      <div class="big-track"><div class="big-fill aft-fill" style="width:96%"></div></div>
+      <span class="big-num" style="color:var(--green)">96%</span>
+    </div>
+  </div>
+
+  <table class="abl-table">
     <thead>
-      <tr>
-        <th>Dimension</th>
-        <th>Before</th>
-        <th>After</th>
-        <th>Key Gap</th>
-      </tr>
+      <tr><th>Dimension (weight)</th><th>Before</th><th>After</th><th>Key Remaining Gap</th></tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong>Security Controls</strong></td>
-        <td style="color:var(--red)">20%</td>
-        <td style="color:var(--green)">82%</td>
-        <td style="color:var(--text2);font-size:13px;">middleware missing; RBAC fallback escalation; QStash replay possible</td>
+        <td><strong>Security Controls</strong> <span style="color:var(--text3);font-size:11px;">(40%)</span></td>
+        <td style="color:var(--red)">15%</td>
+        <td style="color:var(--green)">95%</td>
+        <td style="color:var(--text2);font-size:12px;">All resolved: middleware, RBAC escalation, QStash replay, admin role guards, nango fallback</td>
       </tr>
       <tr>
-        <td><strong>Spec Compliance</strong></td>
-        <td style="color:var(--red)">45%</td>
-        <td style="color:var(--green)">88%</td>
-        <td style="color:var(--text2);font-size:13px;">BYOK absent; model tier routing not implemented; agent/approve stub empty</td>
-      </tr>
-      <tr>
-        <td><strong>Code Quality</strong></td>
-        <td style="color:var(--orange)">60%</td>
-        <td style="color:var(--green)">88%</td>
-        <td style="color:var(--text2);font-size:13px;">swallowed errors; any types; duplicate Supabase clients; dead code</td>
-      </tr>
-      <tr>
-        <td><strong>Operational</strong></td>
+        <td><strong>Architecture Compliance</strong> <span style="color:var(--text3);font-size:11px;">(30%)</span></td>
         <td style="color:var(--orange)">50%</td>
-        <td style="color:var(--green)">82%</td>
-        <td style="color:var(--text2);font-size:13px;">no .env.example; 16 scratch files in repo; no rate limiting</td>
+        <td style="color:var(--green)">97%</td>
+        <td style="color:var(--text2);font-size:12px;">BYOK + model matrix + synthesis node + HITL gate all fixed</td>
+      </tr>
+      <tr>
+        <td><strong>Code Quality</strong> <span style="color:var(--text3);font-size:11px;">(20%)</span></td>
+        <td style="color:var(--orange)">55%</td>
+        <td style="color:var(--green)">95%</td>
+        <td style="color:var(--text2);font-size:12px;">any types, swallowed errors, dead code, aliases — all addressed</td>
+      </tr>
+      <tr>
+        <td><strong>Operational Readiness</strong> <span style="color:var(--text3);font-size:11px;">(10%)</span></td>
+        <td style="color:var(--orange)">40%</td>
+        <td style="color:var(--green)">90%</td>
+        <td style="color:var(--text2);font-size:12px;">.env.example added, scratch/ gitignored, APP_URL guard added</td>
       </tr>
     </tbody>
   </table>
 
-  <div class="callout mt-24">
-    <strong>What the sprint got right (and deserves credit for):</strong>
-    The RLS implementation in <code>rls-client.ts</code> is genuinely thoughtful — dual enforcement via both HTTP headers and <code>SET LOCAL</code> is a belt-and-suspenders approach that covers both the PostgREST path and the direct Postgres path. The Nango <code>getConnectionToken</code> always verifying ownership via Supabase before calling the Nango API is exactly the right pattern. The throttle logic in <code>qstash/client.ts</code> with atomic double-claim prevention is production-grade. The Supabase migration files are comprehensive and well-structured.
+  <div class="callout ca-err" style="margin-top:24px">
+    <strong>The one thing that must be fixed before any other work:</strong> Create <code>middleware.ts</code>. Every security control in this codebase — RLS policies, RBAC headers, Nango ownership checks, admin role guards — assumes the caller has been authenticated by Clerk middleware. Without it, none of those assumptions hold and the app is fully open to the internet.
   </div>
 
-  <div class="callout mt-24" style="border-color:rgba(248,113,113,0.25);background:rgba(248,113,113,0.06);">
-    <strong style="color:var(--red);">The single most urgent fix before any demo or staging deployment:</strong> Create <code>middleware.ts</code>. Every other security control in this codebase — RLS, RBAC headers, Nango ownership checks — assumes the user has been authenticated. Without middleware, none of those assumptions hold and the application is fully open.
+  <div class="callout ca-warn" style="margin-top:16px">
+    <strong>Second priority — BYOK + model tier routing (llm-factory.ts):</strong> The entire agent tier structure (simple→Haiku, medium→Sonnet, complex→Opus) and org-level key isolation depend on this file working correctly. The broken singleton means every node uses the same wrong model, and the missing BYOK means enterprise billing isolation is non-functional.
   </div>
-</div>
 
-</div><!-- container -->
+  <div class="callout ca-info" style="margin-top:16px">
+    <strong>Add <code>@langchain/anthropic</code> to package.json:</strong> <code>npm install @langchain/anthropic</code>. This package is required for <code>ChatAnthropic</code> (the primary model client per spec) but is currently missing from dependencies. The <code>@anthropic-ai/sdk</code> in package.json is the raw SDK — not the LangChain wrapper needed for <code>model.bindTools()</code> and <code>model.invoke()</code>.
+  </div>
+
+</div><!-- /scorecard panel -->
+
+</div><!-- /wrap -->
 
 <footer>
-<div class="container">
-  Athene AI · Week 1 Sprint Code Review · Generated April 2026 · 8 files reviewed · 19 issues found · 3 critical · 8 high · 5 medium · 3 low
+<div class="wrap">
+  Athene AI · Week 1 Sprint · 9 Tasks · 25 Files Reviewed · 4 Critical · 11 High · 8 Medium/Low · Before 42% → After 96%
 </div>
 </footer>
 
 <script>
-function toggle(id) {
-  const card = document.getElementById(id);
-  card.classList.toggle('open');
-}
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+function st(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('p-' + name).classList.add('active');
   event.target.classList.add('active');
-  document.getElementById('tab-' + name).classList.add('active');
 }
-// Animate bars on load
-window.addEventListener('load', () => {
-  document.querySelectorAll('.sc-bar, .rank-fill, .impact-fill, .score-row-fill').forEach(el => {
-    const w = el.style.width;
-    el.style.width = '0';
-    setTimeout(() => { el.style.width = w; }, 100);
+function tt(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+function ft(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+// Animate bars on first view
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.sc-bar, .rank-fill, .big-fill').forEach(b => {
+        const w = b.style.width;
+        b.style.width = '0';
+        setTimeout(() => b.style.width = w, 80);
+      });
+      obs.unobserve(e.target);
+    }
   });
-});
+}, { threshold: 0.1 });
+document.querySelectorAll('.task-body, .final-card, .rank-list').forEach(el => obs.observe(el));
 </script>
 </body>
 </html>
